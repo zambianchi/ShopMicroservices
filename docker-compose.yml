@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+
+  rabbitMqService:
+    image: rabbitmq:3-management
+    hostname: 'rabbitmq'
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - 5672:5672
+      - 15672:15672
+      
+  sqlOrdiniService.data:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=yourStrong(!)Password@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+      
+  sqlProdottiService.data:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=yourStrong(!)Password@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5434:1433"
+
+  ordiniservice:
+    image: ${DOCKER_REGISTRY-}ordiniservice
+    build:
+      context: .
+      dockerfile: src/Ordini/OrdiniService/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlOrdiniService.data
+      - rabbitMqService
+
+  prodottiservice:
+    image: ${DOCKER_REGISTRY-}prodottiservice
+    build:
+      context: .
+      dockerfile: src/Prodotti/ProdottiService/Dockerfile
+    ports:
+      - "8082:8082"
+      - "8083:8083"
+    depends_on:
+      - sqlProdottiService.data
+      - rabbitMqService
+
