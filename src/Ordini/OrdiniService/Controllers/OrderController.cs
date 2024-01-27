@@ -17,7 +17,7 @@ namespace OrdiniService.Controllers
         }
 
         [HttpGet(Name = "GetOrdini")]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetOrdini(CancellationToken cancellationToken)
         {
             try
             {
@@ -30,8 +30,8 @@ namespace OrdiniService.Controllers
             }
         }
 
-        [HttpGet(Name = "GetOrdine")]
-        public async Task<IActionResult> Get(long idOrdine, CancellationToken cancellationToken)
+        [HttpGet("{idOrdine}", Name = "GetOrdine")]
+        public async Task<IActionResult> GetOrdine(long idOrdine, CancellationToken cancellationToken)
         {
             try
             {
