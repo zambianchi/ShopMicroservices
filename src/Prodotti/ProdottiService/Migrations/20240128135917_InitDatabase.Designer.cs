@@ -11,8 +11,8 @@ using ProdottiService.Context;
 namespace ProdottiService.Migrations
 {
     [DbContext(typeof(ProductsContext))]
-    [Migration("20240126230038_ProdottiModelInit")]
-    partial class ProdottiModelInit
+    [Migration("20240128135917_InitDatabase")]
+    partial class InitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace ProdottiService.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
