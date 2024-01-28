@@ -20,9 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-    - name: Restore dependencies
+    - name: Restore dependencies Soluzione progetto
       run: dotnet restore ./OrdiniService.sln
     - name: Build OrdiniService
       run: dotnet build ./src/Ordini/OrdiniService/OrdiniService.csproj --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Test OrdiniService
+      run: dotnet test  ./src/Ordini/OrdiniService.Test/OrdiniService.Test.csproj --no-build --verbosity normal
+    - name: Build ProdottiService
+      run: dotnet build ./src/Prodotti/ProdottiService/ProdottiService.csproj --no-restore
+    - name: Test ProdottiService
+      run: dotnet test  ./src/Prodotti/ProdottiService.Test/ProdottiService.Test.csproj --no-build --verbosity normal
