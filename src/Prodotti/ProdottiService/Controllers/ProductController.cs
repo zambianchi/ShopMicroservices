@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using ProdottiService.Models.API;
 using ProdottiService.Services.Int;
 
@@ -17,6 +18,13 @@ namespace ProdottiService.Controllers
             this._productService = productService;
         }
 
+        /// <summary>
+        /// Richiede tutti i prodotti
+        /// </summary>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Lista di prodotti</returns>
+        [SwaggerResponse(200, typeof(List<ProductDTO>))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpGet(Name = "GetProducts")]
         public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
         {
@@ -31,6 +39,14 @@ namespace ProdottiService.Controllers
             }
         }
 
+        /// <summary>
+        /// Richiede una specifica lista di prodotti
+        /// </summary>
+        /// <param name="productIds">Lista di id prodotti</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Lista di prodotti</returns>
+        [SwaggerResponse(200, typeof(List<ProductDTO>))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpPost(Name = "GetSpecificProducts")]
         public async Task<IActionResult> GetSpecificProducts([FromBody] List<long> productIds, CancellationToken cancellationToken)
         {
@@ -45,6 +61,14 @@ namespace ProdottiService.Controllers
             }
         }
 
+        /// <summary>
+        /// Richiede un prodotto specifico
+        /// </summary>
+        /// <param name="idProduct">ID prodotto</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Prodotto</returns>
+        [SwaggerResponse(200, typeof(ProductDTO))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpGet("{idProduct}", Name = "GetProduct")]
         public async Task<IActionResult> GetProduct(long idProduct, CancellationToken cancellationToken)
         {
@@ -59,6 +83,14 @@ namespace ProdottiService.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea un nuovo prodotto
+        /// </summary>
+        /// <param name="request">Dettaglio prodotto da creare</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Prodotto creato</returns>
+        [SwaggerResponse(200, typeof(ProductDTO))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpPut(Name = "CreateProduct")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
         {
@@ -73,6 +105,14 @@ namespace ProdottiService.Controllers
             }
         }
 
+        /// <summary>
+        /// Elimina un prodotto
+        /// </summary>
+        /// <param name="idProduct">ID prodotto</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
+        [SwaggerResponse(200, typeof(void))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpDelete("{idProduct}", Name = "DeleteProduct")]
         public async Task<IActionResult> DeleteProduct(long idProduct, CancellationToken cancellationToken)
         {
