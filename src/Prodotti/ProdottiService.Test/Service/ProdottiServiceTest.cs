@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.EntityFrameworkCore;
 using ProdottiService.Context;
+using ProdottiService.Models.API;
 using ProdottiService.Services;
 using ProdottiService.Test.MockedData;
 
@@ -78,6 +79,50 @@ namespace ProdottiService.Test.Service
 
             // Act
             Task result() => productService.GetProduct(productIdNotExist, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<Exception>(result);
+        }
+
+        [Fact]
+        public async Task CreateProduct_ProductOk_Ok()
+        {
+            // Arrange
+            var mockContext = new Mock<ProductsContext>();
+
+            var productService = new ProductService(mockContext.Object);
+
+            var newProduct = ProductDTO.ProductDTOFactory(50, "Stampa fotografica fine", "Carta fine", 0.2, 492);
+
+            CreateProductRequest request = CreateProductRequest.CreateProductRequestFactory(newProduct.Nome, newProduct.Descrizione, newProduct.Prezzo, newProduct.QuantitaDisponibile);
+
+            // Act
+            var createProductrResult = await productService.CreateProduct(request, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(createProductrResult);
+            Assert.Equal(createProductrResult.Prezzo, newProduct.Prezzo);
+            Assert.Equal(createProductrResult.Nome, newProduct.Nome);
+            Assert.Equal(createProductrResult.QuantitaDisponibile, newProduct.QuantitaDisponibile);
+        }
+
+        [Fact]
+        public async Task CreateProduct_ProductSameName_Throw()
+        {
+            // Arrange
+            var dataMock = ProductsMock.GetMockedProducts();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(dataMock);
+
+            var productService = new ProductService(mockContext.Object);
+
+            var newProduct = dataMock.First();
+
+            CreateProductRequest request = CreateProductRequest.CreateProductRequestFactory(newProduct.Nome, newProduct.Descrizione, newProduct.Prezzo, newProduct.QuantitaDisponibile);
+
+            // Act
+            Task result() => productService.CreateProduct(request, new CancellationToken());
 
             // Assert
             await Assert.ThrowsAsync<Exception>(result);
