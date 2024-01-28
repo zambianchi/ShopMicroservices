@@ -84,7 +84,7 @@ namespace OrdiniService.Test.Service
         }
 
         [Fact]
-        public async Task CreateOrder_OrderOk_Throw()
+        public async Task CreateOrder_OrderOk_Ok()
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
