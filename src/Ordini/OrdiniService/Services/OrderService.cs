@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.Models;
 using OrdiniService.Models.API;
 using OrdiniService.Services.Int;
 
@@ -21,7 +22,7 @@ namespace OrdiniService.Services
             var ordersDB = await _ordiniContext.Orders
                 .ToListAsync();
 
-            foreach(var orderDB in ordersDB)
+            foreach (var orderDB in ordersDB)
             {
                 orders.Add(OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId));
             }
@@ -38,9 +39,18 @@ namespace OrdiniService.Services
             return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId);
         }
 
-        public Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
+        public async Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var orderDB = new Order
+            {
+                Date = request.DataOrdine,
+                CreationAccountId = request.UserId
+            };
+
+            await _ordiniContext.Orders
+                .AddAsync(orderDB, cancellationToken);
+
+            return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId);
         }
     }
 }
