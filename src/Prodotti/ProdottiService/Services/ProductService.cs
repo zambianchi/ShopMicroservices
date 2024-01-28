@@ -79,6 +79,8 @@ namespace ProdottiService.Services
             await _productsContext.Products
                 .AddAsync(productDB, cancellationToken);
 
+            await _productsContext.SaveChangesAsync(cancellationToken);
+
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
 
