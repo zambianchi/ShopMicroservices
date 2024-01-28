@@ -2,20 +2,22 @@
 {
     public class OrderDTO
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public DateTime Date { get; set; }
         public long CreationAccountId { get; set; }
+        public List<long> ProductIds { get; set; }
 
-        public OrderDTO(int id, DateTime date, long creationAccountId)
+        public OrderDTO(long id, DateTime date, long creationAccountId, List<long> productIds)
         {
             this.Id = id;
             this.Date = date;
             this.CreationAccountId = creationAccountId;
+            this.ProductIds = productIds;
         }
 
-        public static OrderDTO OrderDTOFactory(int id, DateTime date, long creationAccountId)
+        public static OrderDTO OrderDTOFactory(long id, DateTime date, long creationAccountId, List<long> productIds)
         {
-            return new OrderDTO(id, date, creationAccountId);
+            return new OrderDTO(id, date, creationAccountId, productIds);
         }
     }
 }
