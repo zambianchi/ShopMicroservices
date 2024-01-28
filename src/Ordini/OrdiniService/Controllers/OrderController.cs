@@ -89,7 +89,7 @@ namespace OrdiniService.Controllers
         /// <param name="idOrder">ID ordine</param>
         /// <param name="cancellationToken"CancellationToken</param>
         /// <returns></returns>
-        [SwaggerResponse(200, typeof(OrderDTO))]
+        [SwaggerResponse(200, typeof(void))]
         [SwaggerResponse(400, typeof(string))]
         [HttpDelete("{idOrder}", Name = "DeleteOrder")]
         public async Task<IActionResult> DeleteOrder(long idOrder, CancellationToken cancellationToken)
