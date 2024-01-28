@@ -94,9 +94,10 @@ namespace OrdiniService.Test.Service
 
             var orderService = new OrderService(mockContext.Object);
 
-            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1);
+            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1, new List<long>());
+            var productIdsList = new List<long>() { 1, 2, 3 };
 
-            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date);
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, productIdsList);
 
             // Act
             var createOrderResult = await orderService.CreateOrder(request, new CancellationToken());
@@ -105,6 +106,28 @@ namespace OrdiniService.Test.Service
             Assert.NotNull(createOrderResult);
             Assert.Equal(createOrderResult.CreationAccountId, newOrder.CreationAccountId);
             Assert.Equal(createOrderResult.Date, newOrder.Date);
+        }
+
+        [Fact]
+        public async Task CreateOrder_OrderWithoutProducts_Throw()
+        {
+            // Arrange
+            var mockContext = new Mock<OrderContext>();
+            mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
+            mockContext.Setup(c => c.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
+
+            var orderService = new OrderService(mockContext.Object);
+
+            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1, new List<long>());
+            var productIdsList = new List<long>();
+
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, productIdsList);
+
+            // Act
+            Task result() => orderService.CreateOrder(request, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<Exception>(result); // Nessun articolo da associare al nuovo ordine
         }
     }
 }
