@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.Models;
 using OrdiniService.Models.API;
 using OrdiniService.Services;
 using OrdiniService.Test.MockedData;
@@ -80,7 +81,7 @@ namespace OrdiniService.Test.Service
             Task result() => orderService.GetOrder(orderIdNotExist, new CancellationToken());
 
             // Assert
-            await Assert.ThrowsAsync<Exception>(result);
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
         }
 
         [Fact]
@@ -88,6 +89,8 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
+            mockContext.Setup(c => c.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
 
             var orderService = new OrderService(mockContext.Object);
 
