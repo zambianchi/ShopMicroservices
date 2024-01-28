@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using OrdiniService.Models.API;
 using OrdiniService.Services.Int;
 
 namespace OrdiniService.Controllers
@@ -37,6 +38,20 @@ namespace OrdiniService.Controllers
             {
                 var getOrderApiResponse = await _ordiniService.GetOrder(idOrder, cancellationToken);
                 return Ok(getOrderApiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost(Name = "CreateOrder")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var createOrderApiResponse = await _ordiniService.CreateOrder(request, cancellationToken);
+                return Ok(createOrderApiResponse);
             }
             catch (Exception ex)
             {
