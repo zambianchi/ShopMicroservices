@@ -7,5 +7,6 @@
         public string Descrizione { get; set; }
         public double Prezzo { get; set; }
         public int QuantitaDisponibile { get; set; }
+        public long CategoryId { get; set; }
     }
 }
