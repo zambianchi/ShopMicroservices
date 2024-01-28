@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProdottiService.Models.API;
 using ProdottiService.Services.Int;
 
 namespace ProdottiService.Controllers
@@ -37,6 +38,20 @@ namespace ProdottiService.Controllers
             {
                 var getProductApiResponse = await _productService.GetProduct(idProduct, cancellationToken);
                 return Ok(getProductApiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost(Name = "CreateProduct")]
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var createProductApiResponse = await _productService.CreateProduct(request, cancellationToken);
+                return Ok(createProductApiResponse);
             }
             catch (Exception ex)
             {
