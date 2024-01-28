@@ -1,10 +1,13 @@
-﻿using Moq;
+﻿using Microsoft.EntityFrameworkCore;
+using Moq;
 using Moq.EntityFrameworkCore;
 using OrdiniService.Context;
 using OrdiniService.Models;
 using OrdiniService.Models.API;
 using OrdiniService.Services;
+using OrdiniService.Services.Int;
 using OrdiniService.Test.MockedData;
+using System.Threading;
 
 namespace OrdiniService.Test.Service
 {
@@ -12,6 +15,7 @@ namespace OrdiniService.Test.Service
     {
         public OrdiniServiceTest() { }
 
+        #region GetOrders
         [Fact]
         public async Task GetOrders_ListaMock_ReturnLista()
         {
@@ -45,7 +49,9 @@ namespace OrdiniService.Test.Service
             Assert.NotNull(getOrdersResult);
             Assert.Equal(OrdersMock.GetMockedOrders().Count, getOrdersResult.Count());
         }
+        #endregion
 
+        #region GetOrder
         [Fact]
         public async Task GetOrder_GetByIdOk_ReturnOrder()
         {
@@ -83,7 +89,9 @@ namespace OrdiniService.Test.Service
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
         }
+        #endregion
 
+        #region CreateOrder
         [Fact]
         public async Task CreateOrder_OrderOk_Ok()
         {
@@ -133,5 +141,66 @@ namespace OrdiniService.Test.Service
             // Assert
             await Assert.ThrowsAsync<Exception>(result); // Nessun articolo da associare al nuovo ordine
         }
+        #endregion
+
+        #region DeleteOrder
+        [Fact]
+        public async Task DeleteOrder_IdExist_Ok()
+        {
+            // Arrange
+            var firstElement = OrdersMock.GetMockedOrders().First();
+
+            var mockContext = new Mock<OrderContext>();
+            mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
+
+            var mockOrderService = new Mock<IOrderService>(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object);
+            var cancellationToken = new CancellationToken();
+
+            // Act
+            await mockOrderService.Object.DeleteOrder(firstElement.Id, cancellationToken);
+
+            // Assert
+            mockContext.Verify(x => x.Orders.Remove(It.IsAny<Order>()), Times.Once);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteOrder_IdNotExist_Ko()
+        {
+            // Arrange
+            var mockContext = new Mock<OrderContext>();
+            mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
+
+            var orderService = new OrderService(mockContext.Object);
+
+            // Act
+            Task result() => orderService.DeleteOrder(-1, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
+        }
+
+        [Fact]
+        public async Task DeleteOrder_IdExist_DbUpdateKo()
+        {
+            // Arrange
+            var firstElement = OrdersMock.GetMockedOrders().First();
+
+            var mockContext = new Mock<OrderContext>();
+            mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var orderService = new OrderService(mockContext.Object);
+
+            // Act
+            Task result() => orderService.DeleteOrder(firstElement.Id, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+            mockContext.Verify(x => x.Orders.Remove(It.IsAny<Order>()), Times.Once);
+        }
+        #endregion
     }
 }
