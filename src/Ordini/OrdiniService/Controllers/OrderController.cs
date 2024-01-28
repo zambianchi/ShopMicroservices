@@ -82,5 +82,27 @@ namespace OrdiniService.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Elimina un ordine
+        /// </summary>
+        /// <param name="idOrder">ID ordine</param>
+        /// <param name="cancellationToken"CancellationToken</param>
+        /// <returns></returns>
+        [SwaggerResponse(200, typeof(OrderDTO))]
+        [SwaggerResponse(400, typeof(string))]
+        [HttpDelete("{idOrder}", Name = "DeleteOrder")]
+        public async Task<IActionResult> DeleteOrder(long idOrder, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _ordiniService.DeleteOrder(idOrder, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
