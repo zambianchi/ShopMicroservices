@@ -39,6 +39,22 @@ namespace ProdottiService.Services
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
 
+        public async Task<List<ProductDTO>> GetSpecificProducts(List<long> idsProduct, CancellationToken cancellationToken)
+        {
+            List<ProductDTO> products = [];
+
+            var productsDB = await _productsContext.Products
+                .Where(x => idsProduct.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+            foreach (var productDB in productsDB)
+            {
+                products.Add(ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile));
+            }
+
+            return products;
+        }
+
         public async Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken)
         {
             // Controllo possibile presenza di un prodotto con lo stesso nome
