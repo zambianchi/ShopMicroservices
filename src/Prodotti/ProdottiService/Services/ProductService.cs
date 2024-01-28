@@ -37,5 +37,10 @@ namespace ProdottiService.Services
 
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
+
+        public Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
