@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.EntityFrameworkCore;
 using ProdottiService.Context;
+using ProdottiService.Models;
 using ProdottiService.Models.API;
 using ProdottiService.Services;
 using ProdottiService.Test.MockedData;
@@ -81,7 +82,7 @@ namespace ProdottiService.Test.Service
             Task result() => productService.GetProduct(productIdNotExist, new CancellationToken());
 
             // Assert
-            await Assert.ThrowsAsync<Exception>(result);
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
         }
 
         [Fact]
@@ -89,6 +90,8 @@ namespace ProdottiService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()));
 
             var productService = new ProductService(mockContext.Object);
 
