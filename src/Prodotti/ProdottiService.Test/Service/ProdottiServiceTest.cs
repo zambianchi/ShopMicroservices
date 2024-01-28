@@ -91,6 +91,74 @@ namespace ProdottiService.Test.Service
         }
         #endregion
 
+        #region GetSpecificProducts
+        [Fact]
+        public async Task GetSpecificProducts_GetByIdsOk_ReturnProducts()
+        {
+            // Arrange
+            var elements = ProductsMock.GetMockedProducts().Take(2);
+            var elementsId = elements.Select(x => x.Id).ToList();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            // Act
+            var getSpecificProductsResult = await productService.GetSpecificProducts(elementsId, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(getSpecificProductsResult);
+            Assert.Equal(elementsId.Count, getSpecificProductsResult.Count);
+
+            // Verifica che i prodotti restituiti abbiano gli stessi ID dei prodotti specificati
+            foreach (var product in getSpecificProductsResult)
+            {
+                Assert.Contains(product.Id, elementsId);
+            }
+        }
+
+        [Fact]
+        public async Task GetSpecificProducts_GetByIdsNotExist_ReturnZeroProducts()
+        {
+            // Arrange
+            var elements = ProductsMock.GetMockedProducts();
+            var maxElementsId = elements.Max(x => x.Id);
+            var elementsId = new List<long> { maxElementsId + 1, maxElementsId  + 2};
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            // Act
+            var getSpecificProductsResult = await productService.GetSpecificProducts(elementsId, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(getSpecificProductsResult);
+            Assert.Empty(getSpecificProductsResult);
+        }
+
+        [Fact]
+        public async Task GetSpecificProducts_GetByEmpty_ReturnZeroProducts()
+        {
+            // Arrange
+            var elementsId = new List<long>();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            // Act
+            var getSpecificProductsResult = await productService.GetSpecificProducts(elementsId, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(getSpecificProductsResult);
+            Assert.Empty(getSpecificProductsResult);
+        }
+        #endregion
+
         #region CreateProduct
         [Fact]
         public async Task CreateProduct_ProductOk_Ok()
