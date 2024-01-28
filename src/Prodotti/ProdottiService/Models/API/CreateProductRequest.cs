@@ -17,7 +17,7 @@
 
         public static CreateProductRequest CreateProductRequestFactory(string nome, string descrizione, double prezzo, int quantitaDisponibile)
         {
-            return new ProductDTO(nome, descrizione, prezzo, quantitaDisponibile);
+            return new CreateProductRequest(nome, descrizione, prezzo, quantitaDisponibile);
         }
     }
 }
