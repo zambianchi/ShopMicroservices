@@ -30,14 +30,12 @@ namespace OrdiniService.Migrations
                 name: "OrderProducts",
                 columns: table => new
                 {
-                    IdLink = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    IdProduct = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IdProduct = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderProducts", x => x.IdLink);
+                    table.PrimaryKey("PK_OrderProducts", x => new { x.IdProduct, x.OrderId });
                     table.ForeignKey(
                         name: "FK_OrderProducts_Orders_OrderId",
                         column: x => x.OrderId,
@@ -51,16 +49,32 @@ namespace OrdiniService.Migrations
                 table: "OrderProducts",
                 column: "OrderId");
 
-            // Mock data
+
+            // Mock data Orders
             migrationBuilder.InsertData(
                 table: "Orders",
-                    columns: new[] { nameof(Models.Order.Id), nameof(Models.Order.Date), nameof(Models.Order.CreationAccountId), nameof(Models.Order.DeliveryAddressId) },
-                    values: new object[,] {
-                        { 1, new DateTime(2024, 01, 26, 17, 23, 23), 1, 1 },
-                        { 2, new DateTime(2024, 01, 27, 03, 02, 54), 1, 1 },
-                        { 3, new DateTime(2024, 01, 27, 04, 11, 03), 1, 1 },
-                        { 4, new DateTime(2024, 01, 27, 08, 00, 00), 2, 1 },
-                    });
+                        columns: new[] { nameof(Models.Order.Id), nameof(Models.Order.Date), nameof(Models.Order.CreationAccountId), nameof(Models.Order.DeliveryAddressId) },
+                        values: new object[,] {
+                                { 1, new DateTime(2024, 01, 26, 17, 23, 23), 1, 1 },
+                                { 2, new DateTime(2024, 01, 27, 03, 02, 54), 1, 1 },
+                                { 3, new DateTime(2024, 01, 27, 04, 11, 03), 1, 1 },
+                                { 4, new DateTime(2024, 01, 27, 08, 00, 00), 2, 1 },
+                        });
+
+            // Mock data OrderProducts
+            migrationBuilder.InsertData(
+                table: "OrderProducts",
+                columns: new[] { nameof(Models.OrderProducts.IdProduct), "OrderId" },
+                values: new object[,] {
+                                { 1, 1 },
+                                { 2, 1 },
+                                { 4, 1 },
+                                { 5, 1 },
+                                { 6, 2 },
+                                { 4, 3 },
+                                { 5, 3 },
+                                { 9, 4 },
+                });
         }
 
         /// <inheritdoc />

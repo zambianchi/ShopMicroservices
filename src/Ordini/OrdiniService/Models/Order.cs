@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrdiniService.Models
 {
@@ -9,5 +10,6 @@ namespace OrdiniService.Models
         public DateTime Date { get; set; }
         public long CreationAccountId { get; set; }
         public long DeliveryAddressId { get; set; }
+        public virtual List<OrderProducts> OrderProducts { get; set; }
     }
 }

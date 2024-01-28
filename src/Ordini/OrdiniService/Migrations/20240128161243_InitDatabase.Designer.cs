@@ -12,7 +12,7 @@ using OrdiniService.Context;
 namespace OrdiniService.Migrations
 {
     [DbContext(typeof(OrderContext))]
-    [Migration("20240128152909_InitDatabase")]
+    [Migration("20240128161243_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -49,20 +49,13 @@ namespace OrdiniService.Migrations
 
             modelBuilder.Entity("OrdiniService.Models.OrderProducts", b =>
                 {
-                    b.Property<long>("IdLink")
-                        .ValueGeneratedOnAdd()
+                    b.Property<long>("IdProduct")
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdLink"));
-
-                    b.Property<string>("IdProduct")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("IdLink");
+                    b.HasKey("IdProduct", "OrderId");
 
                     b.HasIndex("OrderId");
 
@@ -72,12 +65,17 @@ namespace OrdiniService.Migrations
             modelBuilder.Entity("OrdiniService.Models.OrderProducts", b =>
                 {
                     b.HasOne("OrdiniService.Models.Order", "Order")
-                        .WithMany()
+                        .WithMany("OrderProducts")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("OrdiniService.Models.Order", b =>
+                {
+                    b.Navigation("OrderProducts");
                 });
 #pragma warning restore 612, 618
         }

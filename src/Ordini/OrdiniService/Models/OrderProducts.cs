@@ -1,12 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrdiniService.Models
 {
+    [Keyless]
     public class OrderProducts
     {
-        [Key]
-        public long IdLink { get; set; }
-        public Order Order { get; set; }
-        public List<long> IdProduct { get; set; }
+        [ForeignKey("Order")]
+        public long OrderId { get; set; }
+        public long IdProduct { get; set; }
+        public virtual Order Order { get; set; }
     }
 }
