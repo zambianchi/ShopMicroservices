@@ -14,7 +14,7 @@ namespace ProdottiService.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Descrizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -51,6 +51,7 @@ namespace ProdottiService.Migrations
                     { 17, "Foto su puzzle 3D", "500 pezzi", 5.4, 30, 1 },
                     { 18, "Foto su mousepad", "Dimensioni standard", 3.5, 70, 1 },
                 });
+
         }
 
         /// <inheritdoc />

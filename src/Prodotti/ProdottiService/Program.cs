@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using ProdottiService.Context;
+using ProdottiService.Services;
+using ProdottiService.Services.Int;
 
 namespace ProdottiService
 {
@@ -11,6 +13,8 @@ namespace ProdottiService
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddTransient<IProductService, ProductService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -25,6 +29,7 @@ namespace ProdottiService
             using (var serviceScope = app.Services.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<ProductsContext>();
+                context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
 
@@ -35,7 +40,7 @@ namespace ProdottiService
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
