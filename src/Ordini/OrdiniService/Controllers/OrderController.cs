@@ -16,8 +16,8 @@ namespace OrdiniService.Controllers
             this._ordiniService = ordiniService;
         }
 
-        [HttpGet(Name = "GetOrdini")]
-        public async Task<IActionResult> GetOrdini(CancellationToken cancellationToken)
+        [HttpGet(Name = "GetOrders")]
+        public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
         {
             try
             {
@@ -30,12 +30,12 @@ namespace OrdiniService.Controllers
             }
         }
 
-        [HttpGet("{idOrdine}", Name = "GetOrdine")]
-        public async Task<IActionResult> GetOrdine(long idOrdine, CancellationToken cancellationToken)
+        [HttpGet("{idOrder}", Name = "GetOrder")]
+        public async Task<IActionResult> GetOrder(long idOrder, CancellationToken cancellationToken)
         {
             try
             {
-                var getOrderApiResponse = await _ordiniService.GetOrder(idOrdine, cancellationToken);
+                var getOrderApiResponse = await _ordiniService.GetOrder(idOrder, cancellationToken);
                 return Ok(getOrderApiResponse);
             }
             catch (Exception ex)
