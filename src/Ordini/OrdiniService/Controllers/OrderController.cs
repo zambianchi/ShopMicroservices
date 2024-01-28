@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using OrdiniService.Models.API;
 using OrdiniService.Services.Int;
 
@@ -23,6 +24,8 @@ namespace OrdiniService.Controllers
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Lista di ordini</returns>
         [HttpGet(Name = "GetOrders")]
+        [SwaggerResponse(200, typeof(List<OrderDTO>))]
+        [SwaggerResponse(400, typeof(string))]
         public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
         {
             try
@@ -43,6 +46,8 @@ namespace OrdiniService.Controllers
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Ordine</returns>
         [HttpGet("{idOrder}", Name = "GetOrder")]
+        [SwaggerResponse(200, typeof(OrderDTO))]
+        [SwaggerResponse(400, typeof(string))]
         public async Task<IActionResult> GetOrder(long idOrder, CancellationToken cancellationToken)
         {
             try
@@ -62,6 +67,8 @@ namespace OrdiniService.Controllers
         /// <param name="request">Dettagli ordine da creare</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Ordine creato</returns>
+        [SwaggerResponse(200, typeof(OrderDTO))]
+        [SwaggerResponse(400, typeof(string))]
         [HttpPost(Name = "CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
         {
