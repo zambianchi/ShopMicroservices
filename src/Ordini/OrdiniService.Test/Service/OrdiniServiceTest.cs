@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.Models.API;
 using OrdiniService.Services;
 using OrdiniService.Test.MockedData;
 
@@ -80,6 +81,27 @@ namespace OrdiniService.Test.Service
 
             // Assert
             await Assert.ThrowsAsync<Exception>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_OrderOk_Throw()
+        {
+            // Arrange
+            var mockContext = new Mock<OrderContext>();
+
+            var orderService = new OrderService(mockContext.Object);
+
+            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1);
+
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date);
+
+            // Act
+            var createOrderResult = await orderService.CreateOrder(request, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(createOrderResult);
+            Assert.Equal(createOrderResult.CreationAccountId, newOrder.CreationAccountId);
+            Assert.Equal(createOrderResult.Date, newOrder.Date);
         }
     }
 }
