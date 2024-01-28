@@ -153,12 +153,11 @@ namespace OrdiniService.Test.Service
             var mockContext = new Mock<OrderContext>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var mockOrderService = new Mock<IOrderService>(mockContext.Object);
             var orderService = new OrderService(mockContext.Object);
             var cancellationToken = new CancellationToken();
 
             // Act
-            await mockOrderService.Object.DeleteOrder(firstElement.Id, cancellationToken);
+            await orderService.DeleteOrder(firstElement.Id, cancellationToken);
 
             // Assert
             mockContext.Verify(x => x.Orders.Remove(It.IsAny<Order>()), Times.Once);
