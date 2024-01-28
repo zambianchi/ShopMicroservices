@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using OrdiniService.Models.API;
 using OrdiniService.Services.Int;
 
 namespace OrdiniService.Controllers
@@ -16,8 +17,13 @@ namespace OrdiniService.Controllers
             this._ordiniService = ordiniService;
         }
 
-        [HttpGet(Name = "GetOrdini")]
-        public async Task<IActionResult> GetOrdini(CancellationToken cancellationToken)
+        /// <summary>
+        /// Richiede tutti gli ordini
+        /// </summary>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Lista di ordini</returns>
+        [HttpGet(Name = "GetOrders")]
+        public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
         {
             try
             {
@@ -30,13 +36,39 @@ namespace OrdiniService.Controllers
             }
         }
 
-        [HttpGet("{idOrdine}", Name = "GetOrdine")]
-        public async Task<IActionResult> GetOrdine(long idOrdine, CancellationToken cancellationToken)
+        /// <summary>
+        /// Richiede un ordine specifico
+        /// </summary>
+        /// <param name="idOrder">ID ordine</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Ordine</returns>
+        [HttpGet("{idOrder}", Name = "GetOrder")]
+        public async Task<IActionResult> GetOrder(long idOrder, CancellationToken cancellationToken)
         {
             try
             {
-                var getOrderApiResponse = await _ordiniService.GetOrder(idOrdine, cancellationToken);
+                var getOrderApiResponse = await _ordiniService.GetOrder(idOrder, cancellationToken);
                 return Ok(getOrderApiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Crea un ordine
+        /// </summary>
+        /// <param name="request">Dettagli ordine da creare</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Ordine creato</returns>
+        [HttpPost(Name = "CreateOrder")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var createOrderApiResponse = await _ordiniService.CreateOrder(request, cancellationToken);
+                return Ok(createOrderApiResponse);
             }
             catch (Exception ex)
             {

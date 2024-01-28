@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.Models.API;
 using OrdiniService.Services;
 using OrdiniService.Test.MockedData;
 
@@ -8,13 +9,10 @@ namespace OrdiniService.Test.Service
 {
     public class OrdiniServiceTest
     {
-        public OrdiniServiceTest()
-        {
-
-        }
+        public OrdiniServiceTest() { }
 
         [Fact]
-        public async Task GetListaOrdini_ListaMock_ReturnLista()
+        public async Task GetOrders_ListaMock_ReturnLista()
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
@@ -31,7 +29,7 @@ namespace OrdiniService.Test.Service
         }
 
         [Fact]
-        public async Task GetListaOrdini_ListaVuota_ReturnLista()
+        public async Task GetOrders_ListaVuota_ReturnLista()
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
@@ -48,7 +46,7 @@ namespace OrdiniService.Test.Service
         }
 
         [Fact]
-        public async Task GetListaOrdini_GetByIdOk_ReturnOrder()
+        public async Task GetOrder_GetByIdOk_ReturnOrder()
         {
             // Arrange
             var firstElement = OrdersMock.GetMockedOrders().First();
@@ -68,7 +66,7 @@ namespace OrdiniService.Test.Service
         }
 
         [Fact]
-        public async Task GetListaOrdini_GetByIdKo_Throw()
+        public async Task GetOrder_GetByIdKo_Throw()
         {
             // Arrange
             var orderIdNotExist = 0;
@@ -83,6 +81,27 @@ namespace OrdiniService.Test.Service
 
             // Assert
             await Assert.ThrowsAsync<Exception>(result);
+        }
+
+        [Fact]
+        public async Task CreateOrder_OrderOk_Throw()
+        {
+            // Arrange
+            var mockContext = new Mock<OrderContext>();
+
+            var orderService = new OrderService(mockContext.Object);
+
+            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1);
+
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date);
+
+            // Act
+            var createOrderResult = await orderService.CreateOrder(request, new CancellationToken());
+
+            // Assert
+            Assert.NotNull(createOrderResult);
+            Assert.Equal(createOrderResult.CreationAccountId, newOrder.CreationAccountId);
+            Assert.Equal(createOrderResult.Date, newOrder.Date);
         }
     }
 }
