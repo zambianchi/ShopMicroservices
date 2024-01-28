@@ -29,6 +29,7 @@ namespace ProdottiService
             using (var serviceScope = app.Services.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<ProductsContext>();
+                context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
 
