@@ -65,5 +65,18 @@ namespace ProdottiService.Services
 
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
+
+        public async Task DeleteProduct(long idProduct, CancellationToken cancellationToken)
+        {
+            var productDB = await _productsContext.Products
+                .Where(x => x.Id == idProduct)
+                .SingleAsync(cancellationToken);
+
+            _productsContext.Products.Remove(productDB);
+
+            await _productsContext.SaveChangesAsync(cancellationToken);
+
+            // Possibile invio fanout RabbitMQ per eliminazione articolo
+        }
     }
 }
