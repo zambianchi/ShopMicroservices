@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProdottiService.Context;
+using ProdottiService.Models;
 using ProdottiService.Models.API;
 using ProdottiService.Services.Int;
 
@@ -38,9 +39,31 @@ namespace ProdottiService.Services
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
 
-        public Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken)
+        public async Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            // Controllo possibile presenza di un prodotto con lo stesso nome
+            var sameNameProductDB = await _productsContext.Products
+                .Where(x => x.Nome == request.Nome)
+                .AnyAsync(cancellationToken);
+
+            // Se esiste già un prodotto con lo stesso nome
+            if (sameNameProductDB)
+            {
+                throw new Exception("Prodotto già esistente");
+            }
+
+            var productDB = new Product
+            {
+                Nome = request.Nome,
+                Descrizione = request.Descrizione,
+                Prezzo = request.Prezzo,
+                QuantitaDisponibile = request.QuantitaDisponibile
+            };
+
+            await _productsContext.Products
+                .AddAsync(productDB, cancellationToken);
+
+            return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
     }
 }
