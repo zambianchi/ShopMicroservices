@@ -52,7 +52,7 @@ namespace OrdiniService.Services
 
         public async Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
         {
-            if(request.ProductIds.IsNullOrEmpty())
+            if (request.ProductIds.IsNullOrEmpty())
             {
                 throw new Exception("Nessun articolo da associare al nuovo ordine");
             }
@@ -74,11 +74,26 @@ namespace OrdiniService.Services
             await _ordiniContext.Orders
                 .AddAsync(orderDB, cancellationToken);
 
+            await _ordiniContext.SaveChangesAsync(cancellationToken);
+
             var orderProductIds = orderDB.OrderProducts
                 .Select(x => x.IdProduct)
                 .ToList();
 
             return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds);
+        }
+
+        public async Task DeleteOrder(long idOrder, CancellationToken cancellationToken)
+        {
+            var orderDB = await _ordiniContext.Orders
+                .Where(x => x.Id == idOrder)
+                .SingleAsync(cancellationToken);
+
+            _ordiniContext.Orders.Remove(orderDB);
+
+            await _ordiniContext.SaveChangesAsync(cancellationToken);
+
+            // Possibile invio fanout RabbitMQ per possibile rimborso ordine, ecc...
         }
     }
 }

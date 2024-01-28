@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.Services;
+using OrdiniService.Services.Int;
 using ShopCommons.Services;
 using ShopCommons.Services.Int;
 
@@ -13,7 +15,8 @@ namespace OrdiniService
 
             // Add services to the container.
 
-            builder.Services.AddTransient<Services.Int.IOrderService, Services.OrderService>();
+            builder.Services.AddTransient<IOrderService, OrderService>();
+
             builder.Services.AddSingleton<IRabbitServiceHelper, RabbitServiceHelper>(x =>
                 new RabbitServiceHelper(
                     builder.Configuration["RabbitMQHostname"],
@@ -24,6 +27,8 @@ namespace OrdiniService
             ));
 
             builder.Services.AddControllers();
+            builder.Services.AddOpenApiDocument();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -36,17 +41,20 @@ namespace OrdiniService
             using (var serviceScope = app.Services.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<OrderContext>();
+                context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseOpenApi();
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
