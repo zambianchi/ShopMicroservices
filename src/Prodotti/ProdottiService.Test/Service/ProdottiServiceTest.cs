@@ -7,6 +7,7 @@ using ProdottiService.Models;
 using ProdottiService.Models.API;
 using ProdottiService.Services;
 using ProdottiService.Test.MockedData;
+using System.Threading;
 
 namespace ProdottiService.Test.Service
 {
@@ -173,12 +174,15 @@ namespace ProdottiService.Test.Service
             var newProduct = ProductDTO.ProductDTOFactory(50, "Stampa fotografica fine", "Carta fine", 0.2, 492);
 
             CreateProductRequest request = CreateProductRequest.CreateProductRequestFactory(newProduct.Nome, newProduct.Descrizione, newProduct.Prezzo, newProduct.QuantitaDisponibile);
+            var cancellationToken = new CancellationToken();
 
             // Act
-            var createProductrResult = await productService.CreateProduct(request, new CancellationToken());
+            var createProductrResult = await productService.CreateProduct(request, cancellationToken);
 
             // Assert
             Assert.NotNull(createProductrResult);
+            mockContext.Verify(x => x.Products.AddAsync(It.IsAny<Product>(), cancellationToken), Times.Once);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
             Assert.Equal(createProductrResult.Prezzo, newProduct.Prezzo);
             Assert.Equal(createProductrResult.Nome, newProduct.Nome);
             Assert.Equal(createProductrResult.QuantitaDisponibile, newProduct.QuantitaDisponibile);
