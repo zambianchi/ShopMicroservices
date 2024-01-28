@@ -12,7 +12,7 @@ using OrdiniService.Context;
 namespace OrdiniService.Migrations
 {
     [DbContext(typeof(OrderContext))]
-    [Migration("20240128135801_InitDatabase")]
+    [Migration("20240128152909_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -27,11 +27,11 @@ namespace OrdiniService.Migrations
 
             modelBuilder.Entity("OrdiniService.Models.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CreationAccountId")
                         .HasColumnType("bigint");
@@ -45,6 +45,39 @@ namespace OrdiniService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("OrdiniService.Models.OrderProducts", b =>
+                {
+                    b.Property<long>("IdLink")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdLink"));
+
+                    b.Property<string>("IdProduct")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("IdLink");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderProducts");
+                });
+
+            modelBuilder.Entity("OrdiniService.Models.OrderProducts", b =>
+                {
+                    b.HasOne("OrdiniService.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 #pragma warning restore 612, 618
         }

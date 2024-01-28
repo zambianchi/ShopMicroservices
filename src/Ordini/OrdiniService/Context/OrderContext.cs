@@ -6,6 +6,7 @@ namespace OrdiniService.Context
     public class OrderContext : DbContext
     {
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderProducts> OrderProducts { get; set; }
 
         public OrderContext() { }
 
