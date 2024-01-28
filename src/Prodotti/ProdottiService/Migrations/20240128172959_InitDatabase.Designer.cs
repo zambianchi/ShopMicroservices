@@ -11,7 +11,7 @@ using ProdottiService.Context;
 namespace ProdottiService.Migrations
 {
     [DbContext(typeof(ProductsContext))]
-    [Migration("20240128135917_InitDatabase")]
+    [Migration("20240128172959_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -26,11 +26,11 @@ namespace ProdottiService.Migrations
 
             modelBuilder.Entity("ProdottiService.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
