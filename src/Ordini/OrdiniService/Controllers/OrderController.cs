@@ -17,6 +17,11 @@ namespace OrdiniService.Controllers
             this._ordiniService = ordiniService;
         }
 
+        /// <summary>
+        /// Richiede tutti gli ordini
+        /// </summary>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Lista di ordini</returns>
         [HttpGet(Name = "GetOrders")]
         public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
         {
@@ -31,6 +36,12 @@ namespace OrdiniService.Controllers
             }
         }
 
+        /// <summary>
+        /// Richiede un ordine specifico
+        /// </summary>
+        /// <param name="idOrder">ID ordine</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Ordine</returns>
         [HttpGet("{idOrder}", Name = "GetOrder")]
         public async Task<IActionResult> GetOrder(long idOrder, CancellationToken cancellationToken)
         {
@@ -45,6 +56,12 @@ namespace OrdiniService.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea un ordine
+        /// </summary>
+        /// <param name="request">Dettagli ordine da creare</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Ordine creato</returns>
         [HttpPost(Name = "CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
         {
