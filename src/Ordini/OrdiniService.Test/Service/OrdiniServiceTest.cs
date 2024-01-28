@@ -99,11 +99,15 @@ namespace OrdiniService.Test.Service
 
             CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, productIdsList);
 
+            var cancellationToken = new CancellationToken();
+
             // Act
-            var createOrderResult = await orderService.CreateOrder(request, new CancellationToken());
+            var createOrderResult = await orderService.CreateOrder(request, cancellationToken);
 
             // Assert
             Assert.NotNull(createOrderResult);
+            mockContext.Verify(x => x.Orders.AddAsync(It.IsAny<Order>(), cancellationToken), Times.Once);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
             Assert.Equal(createOrderResult.CreationAccountId, newOrder.CreationAccountId);
             Assert.Equal(createOrderResult.Date, newOrder.Date);
         }

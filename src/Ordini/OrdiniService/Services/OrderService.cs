@@ -74,6 +74,8 @@ namespace OrdiniService.Services
             await _ordiniContext.Orders
                 .AddAsync(orderDB, cancellationToken);
 
+            await _ordiniContext.SaveChangesAsync(cancellationToken);
+
             var orderProductIds = orderDB.OrderProducts
                 .Select(x => x.IdProduct)
                 .ToList();
