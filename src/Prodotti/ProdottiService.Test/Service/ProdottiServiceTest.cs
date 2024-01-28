@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using Moq.EntityFrameworkCore;
 using ProdottiService.Context;
 using ProdottiService.Models;
@@ -12,6 +14,7 @@ namespace ProdottiService.Test.Service
     {
         public ProdottiServiceTest() { }
 
+        #region GetProducts
         [Fact]
         public async Task GetProducts_ListaMock_ReturnLista()
         {
@@ -45,7 +48,9 @@ namespace ProdottiService.Test.Service
             Assert.NotNull(getProductsResult);
             Assert.Equal(ProductsMock.GetMockedProducts().Count, getProductsResult.Count());
         }
+        #endregion
 
+        #region GetProduct
         [Fact]
         public async Task GetProduct_GetByIdOk_ReturnProduct()
         {
@@ -84,7 +89,9 @@ namespace ProdottiService.Test.Service
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
         }
+        #endregion
 
+        #region CreateProduct
         [Fact]
         public async Task CreateProduct_ProductOk_Ok()
         {
@@ -130,5 +137,65 @@ namespace ProdottiService.Test.Service
             // Assert
             await Assert.ThrowsAsync<Exception>(result);
         }
+        #endregion
+
+        #region DeleteProduct
+        [Fact]
+        public async Task DeleteProduct_IdExist_Ok()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+            var cancellationToken = new CancellationToken();
+
+            // Act
+            await productService.DeleteProduct(firstElement.Id, cancellationToken);
+
+            // Assert
+            mockContext.Verify(x => x.Products.Remove(It.IsAny<Product>()), Times.Once);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteProduct_IdNotExist_Ko()
+        {
+            // Arrange
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            // Act
+            Task result() => productService.DeleteProduct(-1, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
+        }
+
+        [Fact]
+        public async Task DeleteProduct_IdExist_DbUpdateKo()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var productService = new ProductService(mockContext.Object);
+
+            // Act
+            Task result() => productService.DeleteProduct(firstElement.Id, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+            mockContext.Verify(x => x.Products.Remove(It.IsAny<Product>()), Times.Once);
+        }
+        #endregion
     }
 }
