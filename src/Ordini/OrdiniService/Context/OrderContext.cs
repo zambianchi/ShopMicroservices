@@ -7,6 +7,8 @@ namespace OrdiniService.Context
     {
         public virtual DbSet<Order> Orders { get; set; }
 
+        public OrderContext() { }
+
         public OrderContext(DbContextOptions<OrderContext> options)
             : base(options)
         {
