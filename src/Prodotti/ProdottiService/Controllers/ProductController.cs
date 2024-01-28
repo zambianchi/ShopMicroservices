@@ -17,7 +17,7 @@ namespace ProdottiService.Controllers
         }
 
         [HttpGet(Name = "GetProducts")]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
         {
             try
             {
@@ -30,8 +30,8 @@ namespace ProdottiService.Controllers
             }
         }
 
-        [HttpGet(Name = "GetProduct")]
-        public async Task<IActionResult> Get(long idProduct, CancellationToken cancellationToken)
+        [HttpGet("{idProduct}", Name = "GetProduct")]
+        public async Task<IActionResult> GetProduct(long idProduct, CancellationToken cancellationToken)
         {
             try
             {
