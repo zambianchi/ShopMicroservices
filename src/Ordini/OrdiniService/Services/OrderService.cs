@@ -37,5 +37,10 @@ namespace OrdiniService.Services
 
             return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId);
         }
+
+        public Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
