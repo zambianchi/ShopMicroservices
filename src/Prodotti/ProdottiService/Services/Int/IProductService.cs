@@ -6,5 +6,6 @@ namespace ProdottiService.Services.Int
     {
         Task<List<ProductDTO>> GetProducts(CancellationToken cancellationToken);
         Task<ProductDTO> GetProduct(long idProduct, CancellationToken cancellationToken);
+        Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken);
     }
 }

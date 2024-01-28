@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProdottiService.Models.API;
 using ProdottiService.Services.Int;
 
 namespace ProdottiService.Controllers
@@ -17,7 +18,7 @@ namespace ProdottiService.Controllers
         }
 
         [HttpGet(Name = "GetProducts")]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
         {
             try
             {
@@ -30,13 +31,27 @@ namespace ProdottiService.Controllers
             }
         }
 
-        [HttpGet(Name = "GetProduct")]
-        public async Task<IActionResult> Get(long idProduct, CancellationToken cancellationToken)
+        [HttpGet("{idProduct}", Name = "GetProduct")]
+        public async Task<IActionResult> GetProduct(long idProduct, CancellationToken cancellationToken)
         {
             try
             {
                 var getProductApiResponse = await _productService.GetProduct(idProduct, cancellationToken);
                 return Ok(getProductApiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost(Name = "CreateProduct")]
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var createProductApiResponse = await _productService.CreateProduct(request, cancellationToken);
+                return Ok(createProductApiResponse);
             }
             catch (Exception ex)
             {
