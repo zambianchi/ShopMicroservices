@@ -96,5 +96,10 @@ namespace ProdottiService.Services
 
             // Possibile invio fanout RabbitMQ per eliminazione articolo
         }
+
+        public async Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

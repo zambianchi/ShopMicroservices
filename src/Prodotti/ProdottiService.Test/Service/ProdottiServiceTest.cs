@@ -269,5 +269,81 @@ namespace ProdottiService.Test.Service
             mockContext.Verify(x => x.Products.Remove(It.IsAny<Product>()), Times.Once);
         }
         #endregion
+
+        #region EditProduct
+        [Fact]
+        public async Task EditProduct_IdExistAmountChanged_Ok()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+            var cancellationToken = new CancellationToken();
+
+            int newQuantita = firstElement.QuantitaDisponibile + 10;
+
+            var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione, 
+                firstElement.Prezzo, newQuantita);
+
+            // Act
+            var editedProductResult = await productService.EditProduct(editProductRequest, cancellationToken);
+
+            // Assert
+            Assert.Equal(editedProductResult.QuantitaDisponibile, newQuantita);
+            Assert.Equal(editedProductResult.Nome, firstElement.Nome);
+            Assert.Equal(editedProductResult.Prezzo, firstElement.Prezzo);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditProduct_IdNotExist_Ko()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            int newQuantita = firstElement.QuantitaDisponibile + 10;
+
+            var editProductRequest = EditProductRequest.EditProductRequestFactory(-1, firstElement.Nome, firstElement.Descrizione,
+                firstElement.Prezzo, newQuantita);
+
+            // Act
+            Task result() => productService.EditProduct(editProductRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
+        }
+
+        [Fact]
+        public async Task EditProduct_IdExist_DbUpdateKo()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var productService = new ProductService(mockContext.Object);
+
+            int newQuantita = firstElement.QuantitaDisponibile + 10;
+            var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione,
+                firstElement.Prezzo, newQuantita);
+
+            // Act
+            Task result() => productService.EditProduct(editProductRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+        }
+        #endregion
     }
 }
