@@ -286,7 +286,7 @@ namespace ProdottiService.Test.Service
             int newQuantita = firstElement.QuantitaDisponibile + 10;
 
             var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione, 
-                firstElement.Prezzo, newQuantita);
+                firstElement.Prezzo, newQuantita, firstElement.CategoryId);
 
             // Act
             var editedProductResult = await productService.EditProduct(editProductRequest, cancellationToken);
@@ -312,7 +312,7 @@ namespace ProdottiService.Test.Service
             int newQuantita = firstElement.QuantitaDisponibile + 10;
 
             var editProductRequest = EditProductRequest.EditProductRequestFactory(-1, firstElement.Nome, firstElement.Descrizione,
-                firstElement.Prezzo, newQuantita);
+                firstElement.Prezzo, newQuantita, firstElement.CategoryId);
 
             // Act
             Task result() => productService.EditProduct(editProductRequest, new CancellationToken());
@@ -336,7 +336,7 @@ namespace ProdottiService.Test.Service
 
             int newQuantita = firstElement.QuantitaDisponibile + 10;
             var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione,
-                firstElement.Prezzo, newQuantita);
+                firstElement.Prezzo, newQuantita, firstElement.CategoryId);
 
             // Act
             Task result() => productService.EditProduct(editProductRequest, new CancellationToken());
