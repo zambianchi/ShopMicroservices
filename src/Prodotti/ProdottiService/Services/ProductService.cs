@@ -99,7 +99,19 @@ namespace ProdottiService.Services
 
         public async Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var productDB = await _productsContext.Products
+                .Where(x => x.Id == request.IdProdotto)
+                .SingleAsync(cancellationToken);
+
+            productDB.Nome = request.Nome;
+            productDB.Descrizione = request.Descrizione;
+            productDB.Prezzo = request.Prezzo;
+            productDB.CategoryId = request.CategoryId;
+            productDB.QuantitaDisponibile = request.QuantitaDisponibile;
+
+            await _productsContext.SaveChangesAsync(cancellationToken);
+
+            return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
     }
 }
