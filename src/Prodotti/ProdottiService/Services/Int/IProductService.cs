@@ -9,5 +9,6 @@ namespace ProdottiService.Services.Int
         Task<List<ProductDTO>> GetSpecificProducts(List<long> idsProduct, CancellationToken cancellationToken);
         Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken);
         Task DeleteProduct(long idProduct, CancellationToken cancellationToken);
+        Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken);
     }
 }
