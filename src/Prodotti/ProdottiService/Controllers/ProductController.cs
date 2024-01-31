@@ -126,5 +126,27 @@ namespace ProdottiService.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Modifica un prodotto
+        /// </summary>
+        /// <param name="request">Prodotto da modificare con relativi campi</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Prodotto modificato</returns>
+        [SwaggerResponse(200, typeof(ProductDTO))]
+        [SwaggerResponse(400, typeof(string))]
+        [HttpPatch(Name = "EditProduct")]
+        public async Task<IActionResult> EditProduct([FromBody]EditProductRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _productService.EditProduct(request, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
