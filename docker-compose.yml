@@ -11,6 +11,11 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
       
   sqlOrdiniService.data:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -30,6 +35,8 @@ services:
 
   ordiniservice:
     image: ${DOCKER_REGISTRY-}ordiniservice
+    deploy:
+      replicas: 2
     build:
       context: .
       dockerfile: src/Ordini/OrdiniService/Dockerfile
@@ -37,11 +44,15 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - sqlOrdiniService.data
-      - rabbitMqService
+      sqlOrdiniService.data:
+        condition: service_started
+      rabbitMqService:
+        condition: service_healthy
 
   prodottiservice:
     image: ${DOCKER_REGISTRY-}prodottiservice
+    deploy:
+      replicas: 3
     build:
       context: .
       dockerfile: src/Prodotti/ProdottiService/Dockerfile
@@ -49,6 +60,19 @@ services:
       - "8082:8082"
       - "8083:8083"
     depends_on:
-      - sqlProdottiService.data
-      - rabbitMqService
-
+      sqlProdottiService.data:
+        condition: service_started
+      rabbitMqService:
+        condition: service_healthy
+      
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: src/GatewayApi/ApiGateway/Dockerfile
+    ports:
+      - "8084:8084"
+      - "8085:8085"
+    depends_on:
+      rabbitMqService:
+        condition: service_healthy
