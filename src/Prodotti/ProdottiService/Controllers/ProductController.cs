@@ -149,5 +149,49 @@ namespace ProdottiService.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotto
+        /// </summary>
+        /// <param name="request">Prodotto da modificare con relativi campi</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Prodotto modificato</returns>
+        [SwaggerResponse(200, typeof(ProductDTO))]
+        [SwaggerResponse(400, typeof(string))]
+        [HttpPatch(Name = "EditProductAvailableAmount")]
+        public async Task<IActionResult> EditProductAvailableAmount([FromBody] EditProductAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var editProductAvailableAmountApiResponse = await _productService.EditProductAvailableAmount(request, cancellationToken);
+                return Ok(editProductAvailableAmountApiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotti
+        /// </summary>
+        /// <param name="request">Prodotti da modificare con relativi campi</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
+        [SwaggerResponse(200, typeof(void))]
+        [SwaggerResponse(400, typeof(string))]
+        [HttpPatch(Name = "EditProductsAvailableAmount")]
+        public async Task<IActionResult> EditProductsAvailableAmount([FromBody] EditProductsAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _productService.EditProductsAvailableAmount(request, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
