@@ -35,8 +35,6 @@ services:
 
   ordiniservice:
     image: ${DOCKER_REGISTRY-}ordiniservice
-    deploy:
-      replicas: 2
     build:
       context: .
       dockerfile: src/Ordini/OrdiniService/Dockerfile
@@ -51,8 +49,6 @@ services:
 
   prodottiservice:
     image: ${DOCKER_REGISTRY-}prodottiservice
-    deploy:
-      replicas: 3
     build:
       context: .
       dockerfile: src/Prodotti/ProdottiService/Dockerfile
