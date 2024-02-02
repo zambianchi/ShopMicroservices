@@ -133,5 +133,48 @@ namespace ProdottiService.Services
 
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotto
+        /// </summary>
+        public async Task<ProductDTO> EditProductAvailableAmount(EditProductAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            var productDB = await _productsContext.Products
+                .Where(x => x.Id == request.IdProduct)
+                .SingleAsync(cancellationToken);
+
+            productDB.QuantitaDisponibile -= request.AvailableAmount;
+
+            if (productDB.QuantitaDisponibile < 0)
+            {
+                throw new InvalidOperationException("Quantità inferiore a 0");
+            }
+
+            await _productsContext.SaveChangesAsync(cancellationToken);
+
+            return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
+        }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotti
+        /// </summary>
+        public async Task EditProductsAvailableAmount(EditProductsAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            foreach (var product in request.Products)
+            {
+                var productDB = await _productsContext.Products
+                    .Where(x => x.Id == product.IdProduct)
+                    .SingleAsync(cancellationToken);
+
+                productDB.QuantitaDisponibile -= product.AvailableAmount;
+
+                if (productDB.QuantitaDisponibile < 0)
+                {
+                    throw new InvalidOperationException("Quantità inferiore a 0");
+                }
+
+                await _productsContext.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 }

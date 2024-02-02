@@ -60,6 +60,24 @@ namespace ProdottiService.RabbitManager
                             var result = await productService.EditProduct(requestParsedEditProduct.MessageData, new CancellationToken());
                             return JsonSerializer.Serialize(result);
                         }
+
+                    case ShopCommons.Models.Enum.RabbitMQMessageType.REQUEST_EDIT_PRODUCT_AVAILABLE_AMOUNT:
+                        var requestParsedEditProductAvailableAmount = JsonSerializer.Deserialize<RabbitMQMessageRequest<EditProductAvailableAmountRequest>>(request);
+                        using (var serviceScope = app.Services.CreateScope())
+                        {
+                            var productService = serviceScope.ServiceProvider.GetRequiredService<IProductService>();
+                            var result = await productService.EditProductAvailableAmount(requestParsedEditProductAvailableAmount.MessageData, new CancellationToken());
+                            return JsonSerializer.Serialize(result);
+                        }
+
+                    case ShopCommons.Models.Enum.RabbitMQMessageType.REQUEST_EDIT_PRODUCTS_AVAILABLE_AMOUNT:
+                        var requestParsedEditProductsAvailableAmount = JsonSerializer.Deserialize<RabbitMQMessageRequest<EditProductsAvailableAmountRequest>>(request);
+                        using (var serviceScope = app.Services.CreateScope())
+                        {
+                            var productService = serviceScope.ServiceProvider.GetRequiredService<IProductService>();
+                            await productService.EditProductsAvailableAmount(requestParsedEditProductsAvailableAmount.MessageData, new CancellationToken());
+                            return JsonSerializer.Serialize(true);
+                        }
                 }
 
                 return string.Empty;
