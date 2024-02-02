@@ -1,4 +1,5 @@
-﻿using OrdiniService.Models.API;
+﻿using OrdiniService.Models.API.Entity;
+using OrdiniService.Models.API.Request;
 
 namespace OrdiniService.Services.Int
 {

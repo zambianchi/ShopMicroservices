@@ -1,4 +1,4 @@
-﻿using OrdiniService.Models;
+﻿using OrdiniService.Models.DB;
 
 namespace OrdiniService.Test.MockedData
 {

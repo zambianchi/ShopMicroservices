@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using OrdiniService.Models.API;
+using OrdiniService.Models.API.Entity;
+using OrdiniService.Models.API.Request;
 using OrdiniService.Services.Int;
 
 namespace OrdiniService.Controllers
@@ -10,12 +11,12 @@ namespace OrdiniService.Controllers
     public class OrderController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
-        private readonly IOrderService _ordiniService;
+        private readonly IOrderService _orderService;
 
-        public OrderController(ILogger<OrderController> logger, IOrderService ordiniService)
+        public OrderController(ILogger<OrderController> logger, IOrderService orderService)
         {
             this._logger = logger;
-            this._ordiniService = ordiniService;
+            this._orderService = orderService;
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace OrdiniService.Controllers
         {
             try
             {
-                var getOrdersApiResponse = await _ordiniService.GetOrders(cancellationToken);
+                var getOrdersApiResponse = await _orderService.GetOrders(cancellationToken);
                 return Ok(getOrdersApiResponse);
             }
             catch (Exception ex)
@@ -52,7 +53,7 @@ namespace OrdiniService.Controllers
         {
             try
             {
-                var getOrderApiResponse = await _ordiniService.GetOrder(idOrder, cancellationToken);
+                var getOrderApiResponse = await _orderService.GetOrder(idOrder, cancellationToken);
                 return Ok(getOrderApiResponse);
             }
             catch (Exception ex)
@@ -74,7 +75,7 @@ namespace OrdiniService.Controllers
         {
             try
             {
-                var createOrderApiResponse = await _ordiniService.CreateOrder(request, cancellationToken);
+                var createOrderApiResponse = await _orderService.CreateOrder(request, cancellationToken);
                 return Ok(createOrderApiResponse);
             }
             catch (Exception ex)
@@ -88,7 +89,6 @@ namespace OrdiniService.Controllers
         /// </summary>
         /// <param name="idOrder">ID ordine</param>
         /// <param name="cancellationToken"CancellationToken</param>
-        /// <returns></returns>
         [SwaggerResponse(200, typeof(void))]
         [SwaggerResponse(400, typeof(string))]
         [HttpDelete("{idOrder}", Name = "DeleteOrder")]
@@ -96,7 +96,7 @@ namespace OrdiniService.Controllers
         {
             try
             {
-                await _ordiniService.DeleteOrder(idOrder, cancellationToken);
+                await _orderService.DeleteOrder(idOrder, cancellationToken);
                 return Ok();
             }
             catch (Exception ex)

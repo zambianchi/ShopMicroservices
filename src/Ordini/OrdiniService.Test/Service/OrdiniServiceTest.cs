@@ -2,8 +2,9 @@
 using Moq;
 using Moq.EntityFrameworkCore;
 using OrdiniService.Context;
-using OrdiniService.Models;
-using OrdiniService.Models.API;
+using OrdiniService.Models.API.Entity;
+using OrdiniService.Models.API.Request;
+using OrdiniService.Models.DB;
 using OrdiniService.Services;
 using OrdiniService.Services.Int;
 using OrdiniService.Test.MockedData;

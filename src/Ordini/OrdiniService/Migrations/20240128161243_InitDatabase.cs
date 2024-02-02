@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using OrdiniService.Models.DB;
 
 #nullable disable
 
@@ -53,7 +54,7 @@ namespace OrdiniService.Migrations
             // Mock data Orders
             migrationBuilder.InsertData(
                 table: "Orders",
-                        columns: new[] { nameof(Models.Order.Id), nameof(Models.Order.Date), nameof(Models.Order.CreationAccountId), nameof(Models.Order.DeliveryAddressId) },
+                        columns: new[] { nameof(Order.Id), nameof(Order.Date), nameof(Order.CreationAccountId), nameof(Order.DeliveryAddressId) },
                         values: new object[,] {
                                 { 1, new DateTime(2024, 01, 26, 17, 23, 23), 1, 1 },
                                 { 2, new DateTime(2024, 01, 27, 03, 02, 54), 1, 1 },
@@ -64,7 +65,7 @@ namespace OrdiniService.Migrations
             // Mock data OrderProducts
             migrationBuilder.InsertData(
                 table: "OrderProducts",
-                columns: new[] { nameof(Models.OrderProducts.IdProduct), "OrderId" },
+                columns: new[] { nameof(OrderProducts.IdProduct), "OrderId" },
                 values: new object[,] {
                                 { 1, 1 },
                                 { 2, 1 },
