@@ -1,4 +1,4 @@
-﻿namespace OrdiniService.Models.API
+﻿namespace OrdiniService.Models.API.Request
 {
     public class CreateOrderRequest
     {
@@ -8,9 +8,9 @@
 
         public CreateOrderRequest(long userId, DateTime dataOrdine, List<long> productIds)
         {
-            this.UserId = userId;
-            this.DataOrdine = dataOrdine;
-            this.ProductIds = productIds;
+            UserId = userId;
+            DataOrdine = dataOrdine;
+            ProductIds = productIds;
         }
 
         public static CreateOrderRequest CreateOrderRequestFactory(long userId, DateTime dataOrdine, List<long> productIds)

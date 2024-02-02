@@ -1,4 +1,4 @@
-﻿namespace OrdiniService.Models.API
+﻿namespace OrdiniService.Models.API.Entity
 {
     public class OrderDTO
     {
@@ -9,10 +9,10 @@
 
         public OrderDTO(long id, DateTime date, long creationAccountId, List<long> productIds)
         {
-            this.Id = id;
-            this.Date = date;
-            this.CreationAccountId = creationAccountId;
-            this.ProductIds = productIds;
+            Id = id;
+            Date = date;
+            CreationAccountId = creationAccountId;
+            ProductIds = productIds;
         }
 
         public static OrderDTO OrderDTOFactory(long id, DateTime date, long creationAccountId, List<long> productIds)

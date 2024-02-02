@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrdiniService.Models
+namespace OrdiniService.Models.DB
 {
     public class Order
     {

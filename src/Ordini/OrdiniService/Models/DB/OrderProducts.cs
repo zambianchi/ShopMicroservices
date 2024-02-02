@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrdiniService.Models
+namespace OrdiniService.Models.DB
 {
     [Keyless]
     public class OrderProducts

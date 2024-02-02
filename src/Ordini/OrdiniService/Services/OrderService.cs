@@ -2,25 +2,30 @@
 using Microsoft.IdentityModel.Tokens;
 using OrdiniService.Context;
 using OrdiniService.Models;
-using OrdiniService.Models.API;
+using OrdiniService.Models.API.Entity;
+using OrdiniService.Models.API.Request;
+using OrdiniService.Models.DB;
 using OrdiniService.Services.Int;
 
 namespace OrdiniService.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly OrderContext _ordiniContext;
+        private readonly OrderContext _orderContext;
 
-        public OrderService(OrderContext ordiniContext)
+        public OrderService(OrderContext orderContext)
         {
-            this._ordiniContext = ordiniContext;
+            this._orderContext = orderContext;
         }
 
+        /// <summary>
+        /// Carica tutti gli ordini
+        /// </summary>
         public async Task<List<OrderDTO>> GetOrders(CancellationToken cancellationToken)
         {
             List<OrderDTO> orders = [];
 
-            var ordersDB = await _ordiniContext.Orders
+            var ordersDB = await _orderContext.Orders
                 .Include(x => x.OrderProducts)
                 .ToListAsync();
 
@@ -36,9 +41,12 @@ namespace OrdiniService.Services
             return orders;
         }
 
+        /// <summary>
+        /// Carica un ordine
+        /// </summary>
         public async Task<OrderDTO> GetOrder(long idOrder, CancellationToken cancellationToken)
         {
-            var orderDB = await _ordiniContext.Orders
+            var orderDB = await _orderContext.Orders
                 .Include(x => x.OrderProducts)
                 .Where(x => x.Id == idOrder)
                 .SingleAsync(cancellationToken);
@@ -50,6 +58,9 @@ namespace OrdiniService.Services
             return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds);
         }
 
+        /// <summary>
+        /// Crea un ordine
+        /// </summary>
         public async Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
         {
             if (request.ProductIds.IsNullOrEmpty())
@@ -71,10 +82,11 @@ namespace OrdiniService.Services
                 OrderProducts = orderProducts
             };
 
-            await _ordiniContext.Orders
+            // Aggiungi il nuovo ordine al DB
+            await _orderContext.Orders
                 .AddAsync(orderDB, cancellationToken);
 
-            await _ordiniContext.SaveChangesAsync(cancellationToken);
+            await _orderContext.SaveChangesAsync(cancellationToken);
 
             var orderProductIds = orderDB.OrderProducts
                 .Select(x => x.IdProduct)
@@ -83,15 +95,18 @@ namespace OrdiniService.Services
             return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds);
         }
 
+        /// <summary>
+        /// Elimina un ordine
+        /// </summary>
         public async Task DeleteOrder(long idOrder, CancellationToken cancellationToken)
         {
-            var orderDB = await _ordiniContext.Orders
+            var orderDB = await _orderContext.Orders
                 .Where(x => x.Id == idOrder)
                 .SingleAsync(cancellationToken);
 
-            _ordiniContext.Orders.Remove(orderDB);
+            _orderContext.Orders.Remove(orderDB);
 
-            await _ordiniContext.SaveChangesAsync(cancellationToken);
+            await _orderContext.SaveChangesAsync(cancellationToken);
 
             // Possibile invio fanout RabbitMQ per possibile rimborso ordine, ecc...
         }

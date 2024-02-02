@@ -1,21 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using OrdiniService.Context;
+using OrdiniService.RabbitManager;
 using OrdiniService.Services;
 using OrdiniService.Services.Int;
+using ShopCommons.Models;
 using ShopCommons.Services;
 using ShopCommons.Services.Int;
+using System.Text.Json;
 
 namespace OrdiniService
 {
     public class Program
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
-            builder.Services.AddTransient<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             builder.Services.AddSingleton<IRabbitServiceHelper, RabbitServiceHelper>(x =>
                 new RabbitServiceHelper(
@@ -58,8 +63,11 @@ namespace OrdiniService
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            // Avvio l'ascolto di RabbitMQ
+            var rabbitMQService = app.Services.GetService<IRabbitServiceHelper>();
+            rabbitMQService.StartListening(async request => await RabbitManagerMessageHelper.ManageMessage(app, request));
 
             app.Run();
         }
