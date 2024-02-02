@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProdottiService.Models;
+using ProdottiService.Models.DB;
 
 namespace ProdottiService.Context
 {
@@ -14,13 +14,5 @@ namespace ProdottiService.Context
         {
             // "Server=localhost,5434;Database=ProductDB;User Id=SA;Password=yourStrong(!)Password@word;Encrypt=True;TrustServerCertificate=True"
         }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder.UseSqlServer("Server=localhost,5434;Database=ProductDB;User Id=SA;Password=yourStrong(!)Password@word;Encrypt=True;TrustServerCertificate=True");
-        //    }
-        //}
     }
 }

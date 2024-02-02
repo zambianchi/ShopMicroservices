@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProdottiService.Context;
 using ProdottiService.Models;
-using ProdottiService.Models.API;
+using ProdottiService.Models.API.Entity;
+using ProdottiService.Models.API.Request;
+using ProdottiService.Models.DB;
 using ProdottiService.Services.Int;
 
 namespace ProdottiService.Services
@@ -15,6 +17,9 @@ namespace ProdottiService.Services
             this._productsContext = productsContext;
         }
 
+        /// <summary>
+        /// Carica tutti i prodotti
+        /// </summary>
         public async Task<List<ProductDTO>> GetProducts(CancellationToken cancellationToken)
         {
             List<ProductDTO> products = [];
@@ -30,6 +35,9 @@ namespace ProdottiService.Services
             return products;
         }
 
+        /// <summary>
+        /// Carica un prodotto
+        /// </summary>
         public async Task<ProductDTO> GetProduct(long idProduct, CancellationToken cancellationToken)
         {
             var productDB = await _productsContext.Products
@@ -39,6 +47,9 @@ namespace ProdottiService.Services
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
 
+        /// <summary>
+        /// Carica specifici prodotti
+        /// </summary>
         public async Task<List<ProductDTO>> GetSpecificProducts(List<long> idsProduct, CancellationToken cancellationToken)
         {
             List<ProductDTO> products = [];
@@ -55,11 +66,14 @@ namespace ProdottiService.Services
             return products;
         }
 
+        /// <summary>
+        /// Crea un prodotto
+        /// </summary>
         public async Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken)
         {
             // Controllo possibile presenza di un prodotto con lo stesso nome
             var sameNameProductDB = await _productsContext.Products
-                .Where(x => x.Nome == request.Nome)
+                .Where(x => x.Nome == request.Name)
                 .AnyAsync(cancellationToken);
 
             // Se esiste già un prodotto con lo stesso nome
@@ -70,10 +84,10 @@ namespace ProdottiService.Services
 
             var productDB = new Product
             {
-                Nome = request.Nome,
-                Descrizione = request.Descrizione,
-                Prezzo = request.Prezzo,
-                QuantitaDisponibile = request.QuantitaDisponibile
+                Nome = request.Name,
+                Descrizione = request.Description,
+                Prezzo = request.Price,
+                QuantitaDisponibile = request.AvailableAmount
             };
 
             await _productsContext.Products
@@ -84,6 +98,9 @@ namespace ProdottiService.Services
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
         }
 
+        /// <summary>
+        /// Cancella un prodotto
+        /// </summary>
         public async Task DeleteProduct(long idProduct, CancellationToken cancellationToken)
         {
             var productDB = await _productsContext.Products
@@ -97,17 +114,20 @@ namespace ProdottiService.Services
             // Possibile invio fanout RabbitMQ per eliminazione articolo
         }
 
+        /// <summary>
+        /// Modifica prodotto
+        /// </summary>
         public async Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken)
         {
             var productDB = await _productsContext.Products
-                .Where(x => x.Id == request.IdProdotto)
+                .Where(x => x.Id == request.IdProduct)
                 .SingleAsync(cancellationToken);
 
-            productDB.Nome = request.Nome;
-            productDB.Descrizione = request.Descrizione;
-            productDB.Prezzo = request.Prezzo;
+            productDB.Nome = request.Name;
+            productDB.Descrizione = request.Description;
+            productDB.Prezzo = request.Price;
             productDB.CategoryId = request.CategoryId;
-            productDB.QuantitaDisponibile = request.QuantitaDisponibile;
+            productDB.QuantitaDisponibile = request.AvailableAmount;
 
             await _productsContext.SaveChangesAsync(cancellationToken);
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using ProdottiService.Models.API;
+using ProdottiService.Models.API.Entity;
+using ProdottiService.Models.API.Request;
 using ProdottiService.Services.Int;
 
 namespace ProdottiService.Controllers
@@ -136,12 +137,12 @@ namespace ProdottiService.Controllers
         [SwaggerResponse(200, typeof(ProductDTO))]
         [SwaggerResponse(400, typeof(string))]
         [HttpPatch(Name = "EditProduct")]
-        public async Task<IActionResult> EditProduct([FromBody]EditProductRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditProduct([FromBody] EditProductRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                await _productService.EditProduct(request, cancellationToken);
-                return Ok();
+                var editProductApiResponse = await _productService.EditProduct(request, cancellationToken);
+                return Ok(editProductApiResponse);
             }
             catch (Exception ex)
             {

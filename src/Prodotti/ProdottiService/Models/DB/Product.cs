@@ -1,4 +1,4 @@
-﻿namespace ProdottiService.Models
+﻿namespace ProdottiService.Models.DB
 {
     public class Product
     {

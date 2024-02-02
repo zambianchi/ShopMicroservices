@@ -1,4 +1,4 @@
-﻿namespace ProdottiService.Models.API
+﻿namespace ProdottiService.Models.API.Entity
 {
     public class ProductDTO
     {
