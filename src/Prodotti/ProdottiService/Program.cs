@@ -1,8 +1,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using ProdottiService.Context;
+using ProdottiService.RabbitManager;
 using ProdottiService.Services;
 using ProdottiService.Services.Int;
+using ShopCommons.Services;
+using ShopCommons.Services.Int;
 
 namespace ProdottiService
 {
@@ -14,7 +17,16 @@ namespace ProdottiService
 
             // Add services to the container.
 
-            builder.Services.AddTransient<IProductService, ProductService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+
+            builder.Services.AddSingleton<IRabbitServiceHelper, RabbitServiceHelper>(x =>
+                new RabbitServiceHelper(
+                    builder.Configuration["RabbitMQHostname"],
+                    Convert.ToInt32(builder.Configuration["RabbitMQPort"]),
+                    builder.Configuration["RabbitMQUsername"],
+                    builder.Configuration["RabbitMQPassword"],
+                    builder.Configuration["RabbitMQQueueName"]
+            ));
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApiDocument();
@@ -48,8 +60,11 @@ namespace ProdottiService
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            // Avvio l'ascolto di RabbitMQ
+            var rabbitMQService = app.Services.GetService<IRabbitServiceHelper>();
+            rabbitMQService.StartListening(async request => await RabbitManagerMessageHelper.ManageMessage(app, request));
 
             app.Run();
         }

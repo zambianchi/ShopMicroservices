@@ -1,4 +1,5 @@
-﻿using ProdottiService.Models.API;
+﻿using ProdottiService.Models.API.Entity;
+using ProdottiService.Models.API.Request;
 
 namespace ProdottiService.Services.Int
 {

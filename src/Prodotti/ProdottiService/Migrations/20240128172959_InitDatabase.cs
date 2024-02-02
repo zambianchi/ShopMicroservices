@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using ProdottiService.Models.DB;
 
 #nullable disable
 
@@ -29,8 +30,8 @@ namespace ProdottiService.Migrations
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { nameof(Models.Product.Id), nameof(Models.Product.Nome), nameof(Models.Product.Descrizione), nameof(Models.Product.Prezzo),
-                                 nameof(Models.Product.QuantitaDisponibile), nameof(Models.Product.CategoryId) },
+                columns: new[] { nameof(Product.Id), nameof(Product.Nome), nameof(Product.Descrizione), nameof(Product.Prezzo),
+                                 nameof(Product.QuantitaDisponibile), nameof(Product.CategoryId) },
                 values: new object[,] {
                     { 1, "Stampa fotografica", "Qualità standard", 0.3, 140, 1 },
                     { 2, "Stampa alta risoluzione", "Qualità HD", 0.5, 85, 1 },

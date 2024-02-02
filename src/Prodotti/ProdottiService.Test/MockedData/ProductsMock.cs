@@ -1,4 +1,4 @@
-﻿using ProdottiService.Models;
+﻿using ProdottiService.Models.DB;
 
 namespace ProdottiService.Test.MockedData
 {
