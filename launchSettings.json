@@ -3,9 +3,16 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "apigateway",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "ordiniservice": "StartDebugging",
-        "prodottiservice": "StartDebugging"
+        "prodottiservice": "StartDebugging",
+        "apigateway": "StartDebugging",
+        "rabbitMqService": "StartWithoutDebugging",
+        "sqlOrdiniService.data": "StartWithoutDebugging",
+        "sqlProdottiService.data": "StartWithoutDebugging"
       }
     }
   }
