@@ -11,5 +11,7 @@ namespace ProdottiService.Services.Int
         Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken);
         Task DeleteProduct(long idProduct, CancellationToken cancellationToken);
         Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken);
+        Task<ProductDTO> EditProductAvailableAmount(EditProductAvailableAmountRequest request, CancellationToken cancellationToken);
+        Task EditProductsAvailableAmount(EditProductsAvailableAmountRequest request, CancellationToken cancellationToken);
     }
 }

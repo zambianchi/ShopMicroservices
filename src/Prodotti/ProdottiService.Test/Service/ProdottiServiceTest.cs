@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 using Moq.EntityFrameworkCore;
 using ProdottiService.Context;
@@ -8,6 +9,7 @@ using ProdottiService.Models.API.Request;
 using ProdottiService.Models.DB;
 using ProdottiService.Services;
 using ProdottiService.Test.MockedData;
+using System.Data.Common;
 using System.Threading;
 
 namespace ProdottiService.Test.Service
@@ -126,7 +128,7 @@ namespace ProdottiService.Test.Service
             // Arrange
             var elements = ProductsMock.GetMockedProducts();
             var maxElementsId = elements.Max(x => x.Id);
-            var elementsId = new List<long> { maxElementsId + 1, maxElementsId  + 2};
+            var elementsId = new List<long> { maxElementsId + 1, maxElementsId + 2 };
 
             var mockContext = new Mock<ProductsContext>();
             mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
@@ -286,7 +288,7 @@ namespace ProdottiService.Test.Service
 
             int newQuantita = firstElement.QuantitaDisponibile + 10;
 
-            var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione, 
+            var editProductRequest = EditProductRequest.EditProductRequestFactory(firstElement.Id, firstElement.Nome, firstElement.Descrizione,
                 firstElement.Prezzo, newQuantita, firstElement.CategoryId);
 
             // Act
@@ -344,6 +346,194 @@ namespace ProdottiService.Test.Service
 
             // Assert
             await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+        }
+        #endregion
+
+        #region EditProductAvailableAmount
+        [Fact]
+        public async Task EditProductAvailableAmount_IdExistAmountChanged_Ok()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+            var cancellationToken = new CancellationToken();
+
+            int removedAmount = 5;
+
+            var editProductAvailableAmountRequest = EditProductAvailableAmountRequest.EditProductAvailableAmountRequestFactory(firstElement.Id, removedAmount);
+
+            // Act
+            var EditProductAvailableAmountResult = await productService.EditProductAvailableAmount(editProductAvailableAmountRequest, cancellationToken);
+
+            // Assert
+            Assert.Equal(EditProductAvailableAmountResult.QuantitaDisponibile, firstElement.QuantitaDisponibile - removedAmount);
+            Assert.Equal(EditProductAvailableAmountResult.Nome, firstElement.Nome);
+            Assert.Equal(EditProductAvailableAmountResult.Prezzo, firstElement.Prezzo);
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditProductAvailableAmount_IdNotExist_Ko()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            int removedAmount = 5;
+
+            var editProductAvailableAmountRequest = EditProductAvailableAmountRequest.EditProductAvailableAmountRequestFactory(-1, removedAmount);
+
+            // Act
+            Task result() => productService.EditProductAvailableAmount(editProductAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
+        }
+
+        [Fact]
+        public async Task EditProductAvailableAmount_IdExist_DbUpdateKo()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var productService = new ProductService(mockContext.Object);
+
+            int removedAmount = 5;
+
+            var editProductAvailableAmountRequest = EditProductAvailableAmountRequest.EditProductAvailableAmountRequestFactory(firstElement.Id, removedAmount);
+
+            // Act
+            Task result() => productService.EditProductAvailableAmount(editProductAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+        }
+
+        [Fact]
+        public async Task EditProductAvailableAmount_IdExistAmountNegative_Ko()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var productService = new ProductService(mockContext.Object);
+
+            int removedAmount = firstElement.QuantitaDisponibile + 10; // Rimuovo la sua quantità + altri elementi
+
+            var editProductAvailableAmountRequest = EditProductAvailableAmountRequest.EditProductAvailableAmountRequestFactory(firstElement.Id, removedAmount);
+
+            // Act
+            Task result() => productService.EditProductAvailableAmount(editProductAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Errore Quantità inferiore a 0
+        }
+        #endregion
+
+        #region EditProductsAvailableAmount
+        [Fact]
+        public async Task EditProductsAvailableAmount_IdExistAmountChanged_Ok()
+        {
+            // Arrange
+            var cancellationToken = new CancellationToken();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            var toEditProducts = ProductsMock.GetMockedAvailableProducts();
+
+            var editProductsAvailableAmountRequest = EditProductsAvailableAmountRequest.EditProductsAvailableAmountRequestFactory(toEditProducts);
+
+            // Act
+            await productService.EditProductsAvailableAmount(editProductsAvailableAmountRequest, cancellationToken);
+
+            // Assert
+            mockContext.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Exactly(toEditProducts.Count));
+        }
+
+        [Fact]
+        public async Task EditProductsAvailableAmount_IdNotExist_Ko()
+        {
+            // Arrange
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            var toEditProducts = ProductsMock.GetMockedAvailableProducts();
+            toEditProducts.Add(ProductAvailableForRequest.ProductAvailableForRequestFactory(-1, 5));
+
+            var editProductsAvailableAmountRequest = EditProductsAvailableAmountRequest.EditProductsAvailableAmountRequestFactory(toEditProducts);
+
+            // Act
+            Task result() => productService.EditProductsAvailableAmount(editProductsAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Sequence contains no elements
+        }
+
+        [Fact]
+        public async Task EditProductsAvailableAmount_IdExist_DbUpdateKo()
+        {
+            // Arrange
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+            mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException());
+
+            var productService = new ProductService(mockContext.Object);
+
+            var toEditProducts = ProductsMock.GetMockedAvailableProducts();
+
+            var editProductsAvailableAmountRequest = EditProductsAvailableAmountRequest.EditProductsAvailableAmountRequestFactory(toEditProducts);
+
+            // Act
+            Task result() => productService.EditProductsAvailableAmount(editProductsAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<DbUpdateException>(result); // Errore SaveChangesAsync
+        }
+
+        [Fact]
+        public async Task EditProductsAvailableAmount_IdExistAmountNegative_Ko()
+        {
+            // Arrange
+            var firstElement = ProductsMock.GetMockedProducts().First();
+
+            var mockContext = new Mock<ProductsContext>();
+            mockContext.Setup(c => c.Products).ReturnsDbSet(ProductsMock.GetMockedProducts());
+
+            var productService = new ProductService(mockContext.Object);
+
+            var toEditProducts = ProductsMock.GetMockedAvailableProducts();
+            toEditProducts.First().AvailableAmount = int.MaxValue;
+
+            var editProductsAvailableAmountRequest = EditProductsAvailableAmountRequest.EditProductsAvailableAmountRequestFactory(toEditProducts);
+
+            // Act
+            Task result() => productService.EditProductsAvailableAmount(editProductsAvailableAmountRequest, new CancellationToken());
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result); // Errore Quantità inferiore a 0
         }
         #endregion
     }
