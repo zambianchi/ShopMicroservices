@@ -1,21 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrdiniService.Context;
-using OrdiniService.Models;
 using OrdiniService.Models.API.Entity;
 using OrdiniService.Models.API.Request;
 using OrdiniService.Models.DB;
+using OrdiniService.Models.ExternalAPI.Entity;
+using OrdiniService.Models.ExternalAPI.Request;
 using OrdiniService.Services.Int;
+using OrdiniService.SubServices.Int;
 
 namespace OrdiniService.Services
 {
     public class OrderService : IOrderService
     {
         private readonly OrderContext _orderContext;
+        private readonly IOrderSubService _orderSubService;
 
-        public OrderService(OrderContext orderContext)
+        public OrderService(OrderContext orderContext, IOrderSubService orderSubService)
         {
             this._orderContext = orderContext;
+            this._orderSubService = orderSubService;
         }
 
         /// <summary>
@@ -32,10 +36,16 @@ namespace OrdiniService.Services
             foreach (var orderDB in ordersDB)
             {
                 var orderProductIds = orderDB.OrderProducts
-                    .Select(x => x.IdProduct)
                     .ToList();
 
-                orders.Add(OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds));
+                List<OrderProductsDTO> orderProducts = new List<OrderProductsDTO>();
+                foreach (var product in orderProducts)
+                {
+                    var orderProduct = OrderProductsDTO.OrderProductsDTOFactory(product.IdProduct, product.Amount);
+                    orderProducts.Add(orderProduct);
+                }
+
+                orders.Add(OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProducts));
             }
 
             return orders;
@@ -51,11 +61,14 @@ namespace OrdiniService.Services
                 .Where(x => x.Id == idOrder)
                 .SingleAsync(cancellationToken);
 
-            var orderProductIds = orderDB.OrderProducts
-                .Select(x => x.IdProduct)
-                .ToList();
+            List<OrderProductsDTO> orderProducts = new List<OrderProductsDTO>();
+            foreach (var product in orderDB.OrderProducts)
+            {
+                var orderProduct = OrderProductsDTO.OrderProductsDTOFactory(product.IdProduct, product.Amount);
+                orderProducts.Add(orderProduct);
+            }
 
-            return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds);
+            return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProducts);
         }
 
         /// <summary>
@@ -63,15 +76,16 @@ namespace OrdiniService.Services
         /// </summary>
         public async Task<OrderDTO> CreateOrder(CreateOrderRequest request, CancellationToken cancellationToken)
         {
-            if (request.ProductIds.IsNullOrEmpty())
+            if (request.Products.IsNullOrEmpty())
             {
                 throw new Exception("Nessun articolo da associare al nuovo ordine");
             }
 
-            var orderProducts = request.ProductIds
+            var orderProductsRequest = request.Products
                 .Select(x => new OrderProducts
                 {
-                    IdProduct = x
+                    IdProduct = x.IdProduct,
+                    Amount = x.Amount
                 })
                 .ToList();
 
@@ -79,7 +93,7 @@ namespace OrdiniService.Services
             {
                 Date = request.DataOrdine,
                 CreationAccountId = request.UserId,
-                OrderProducts = orderProducts
+                OrderProducts = orderProductsRequest
             };
 
             // Aggiungi il nuovo ordine al DB
@@ -88,11 +102,15 @@ namespace OrdiniService.Services
 
             await _orderContext.SaveChangesAsync(cancellationToken);
 
-            var orderProductIds = orderDB.OrderProducts
-                .Select(x => x.IdProduct)
+            // Riporto prodotti venduti
+            var soldProductsForRequest = orderProductsRequest
+                .Select(x => ProductAvailableForRequestApiDTO.ProductAvailableForRequestApiDTOFactory(x.IdProduct, x.Amount))
                 .ToList();
 
-            return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, orderProductIds);
+            var reportSoldProductsRequest = EditProductsAvailableAmountRequestApiDTO.EditProductsAvailableAmountRequestApiDTOFactory(soldProductsForRequest);
+            await this._orderSubService.ReportSoldProducts(reportSoldProductsRequest, cancellationToken);
+
+            return OrderDTO.OrderDTOFactory(orderDB.Id, orderDB.Date, orderDB.CreationAccountId, request.Products);
         }
 
         /// <summary>

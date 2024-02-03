@@ -3,6 +3,10 @@ using OrdiniService.Context;
 using OrdiniService.RabbitManager;
 using OrdiniService.Services;
 using OrdiniService.Services.Int;
+using OrdiniService.Settings;
+using OrdiniService.Settings.Int;
+using OrdiniService.SubServices;
+using OrdiniService.SubServices.Int;
 using ShopCommons.Models;
 using ShopCommons.Services;
 using ShopCommons.Services.Int;
@@ -21,6 +25,7 @@ namespace OrdiniService
             // Add services to the container.
 
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderSubService, OrderSubService>();
 
             builder.Services.AddSingleton<IRabbitServiceHelper, RabbitServiceHelper>(x =>
                 new RabbitServiceHelper(
@@ -30,6 +35,9 @@ namespace OrdiniService
                     builder.Configuration["RabbitMQPassword"],
                     builder.Configuration["RabbitMQQueueName"]
             ));
+
+            builder.Services.AddSingleton<IEnvironmentSettings, EnvironmentSettings>(x =>
+                new EnvironmentSettings(builder.Configuration["RabbitMQQueueNameOrders"], builder.Configuration["RabbitMQQueueNameProducts"]));
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApiDocument();

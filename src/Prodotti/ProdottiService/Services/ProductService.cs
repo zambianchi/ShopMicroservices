@@ -3,6 +3,7 @@ using ProdottiService.Context;
 using ProdottiService.Models;
 using ProdottiService.Models.API.Entity;
 using ProdottiService.Models.API.Request;
+using ProdottiService.Models.API.Response;
 using ProdottiService.Models.DB;
 using ProdottiService.Services.Int;
 
@@ -64,6 +65,25 @@ namespace ProdottiService.Services
             }
 
             return products;
+        }
+
+        /// <summary>
+        /// Carica specifici prodotti
+        /// </summary>
+        public async Task<GetSpecificProductsAvailabilitiesResponse> GetSpecificProductsAvailabilities(List<long> idsProduct, CancellationToken cancellationToken)
+        {
+            var productsDB = await _productsContext.Products
+                .Where(x => idsProduct.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+            List<ProductAvailabilityDTO> productsAvailabilities = new List<ProductAvailabilityDTO>();
+            foreach (var productDB in productsDB)
+            {
+                var productAvailability = ProductAvailabilityDTO.ProductAvailabilityDTOFactory(productDB.Id, productDB.QuantitaDisponibile);
+                productsAvailabilities.Add(productAvailability);
+            }
+
+            return GetSpecificProductsAvailabilitiesResponse.GetSpecificProductsAvailabilitiesResponseFactory(productsAvailabilities);
         }
 
         /// <summary>
@@ -132,6 +152,49 @@ namespace ProdottiService.Services
             await _productsContext.SaveChangesAsync(cancellationToken);
 
             return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
+        }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotto
+        /// </summary>
+        public async Task<ProductDTO> EditProductAvailableAmount(EditProductAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            var productDB = await _productsContext.Products
+                .Where(x => x.Id == request.IdProduct)
+                .SingleAsync(cancellationToken);
+
+            productDB.QuantitaDisponibile -= request.AvailableAmount;
+
+            if (productDB.QuantitaDisponibile < 0)
+            {
+                throw new InvalidOperationException("Quantità inferiore a 0");
+            }
+
+            await _productsContext.SaveChangesAsync(cancellationToken);
+
+            return ProductDTO.ProductDTOFactory(productDB.Id, productDB.Nome, productDB.Descrizione, productDB.Prezzo, productDB.QuantitaDisponibile);
+        }
+
+        /// <summary>
+        /// Modifica quantità disponibile prodotti
+        /// </summary>
+        public async Task EditProductsAvailableAmount(EditProductsAvailableAmountRequest request, CancellationToken cancellationToken)
+        {
+            foreach (var product in request.Products)
+            {
+                var productDB = await _productsContext.Products
+                    .Where(x => x.Id == product.IdProduct)
+                    .SingleAsync(cancellationToken);
+
+                productDB.QuantitaDisponibile -= product.AvailableAmount;
+
+                if (productDB.QuantitaDisponibile < 0)
+                {
+                    throw new InvalidOperationException("Quantità inferiore a 0");
+                }
+
+                await _productsContext.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }

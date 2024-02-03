@@ -9,6 +9,7 @@ namespace OrdiniService.Models.DB
         [ForeignKey("Order")]
         public long OrderId { get; set; }
         public long IdProduct { get; set; }
+        public int Amount { get; set; }
         public virtual Order Order { get; set; }
     }
 }
