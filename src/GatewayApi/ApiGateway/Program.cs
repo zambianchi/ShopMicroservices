@@ -8,6 +8,7 @@ using ShopCommons.Services;
 using ApiGateway.Settings.Int;
 using ApiGateway.Settings;
 using System.Reflection;
+using Microsoft.OpenApi.Models;
 
 namespace ApiGateway
 {
@@ -41,10 +42,28 @@ namespace ApiGateway
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Gestione Shop Gateway API",
+                    Version = "v1",
+                    Description = "Un gateway per la gestione di ordini e prodotti",
+                    TermsOfService = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Davide Zambianchi",
+                        Url = new Uri("https://www.linkedin.com/in/davide-zambianchi/"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT License",
+                        Url = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE"),
+                    }
+                });
+
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
+                c.IncludeXmlComments(xmlPath, true);
             });
 
             var app = builder.Build();

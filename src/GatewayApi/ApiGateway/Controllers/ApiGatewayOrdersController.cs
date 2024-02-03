@@ -8,6 +8,7 @@ namespace ApiGateway.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [OpenApiController("Controller per la gestione degli ordini")]
     public class ApiGatewayOrdersController : ControllerBase
     {
         private readonly ILogger<ApiGatewayOrdersController> _logger;
