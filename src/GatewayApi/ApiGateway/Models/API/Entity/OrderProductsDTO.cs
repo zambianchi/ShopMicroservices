@@ -1,7 +1,10 @@
-﻿namespace ApiGateway.Models.API.Entity
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ApiGateway.Models.API.Entity
 {
     public class OrderProductsDTO
     {
+        [Required]
         public long IdProduct { get; set; }
         public int Amount { get; set; }
 

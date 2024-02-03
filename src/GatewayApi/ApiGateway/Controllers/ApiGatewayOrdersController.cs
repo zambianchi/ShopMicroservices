@@ -25,6 +25,8 @@ namespace ApiGateway.Controllers
         /// <param name="idOrder">ID ordine</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Ordine</returns>
+        /// <response code="200">Ritorna l'ordine ricercato</response>
+        /// <response code="400">Ritorna se l'ordine non è presente</response>
         [SwaggerResponse(200, typeof(OrderDTO))]
         [SwaggerResponse(400, typeof(string))]
         [HttpGet("{idOrder}", Name = "GetOrder")]
@@ -47,6 +49,23 @@ namespace ApiGateway.Controllers
         /// <param name="request">Dettagli ordine da creare</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Ordine creato</returns>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     PUT CreateOrder
+        ///     {
+        ///       "UserId": 1,
+        ///       "DataOrdine": "2024-02-03T01:21:29.542Z",
+        ///       "Products": [
+        ///         {
+        ///            "IdProduct": 1,
+        ///            "Amount": 10
+        ///         }
+        ///       ]
+        ///     }
+        /// </remarks>
+        /// <response code="200">Ritorna l'ordine creato</response>
+        /// <response code="400">Ritorna in caso di errore della creazione ordine</response>
         [SwaggerResponse(200, typeof(OrderDTO))]
         [SwaggerResponse(400, typeof(string))]
         [HttpPut(Name = "CreateOrder")]
@@ -69,6 +88,8 @@ namespace ApiGateway.Controllers
         /// <param name="idOrder">ID ordine</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
+        /// <response code="200">Ritorna per eliminazione con successo dell'ordine</response>
+        /// <response code="400">Ritorna in caso di errore durante l'eliminazione dell'ordine</response>
         [SwaggerResponse(200, typeof(void))]
         [SwaggerResponse(400, typeof(string))]
         [HttpDelete("{idOrder}", Name = "DeleteOrder")]
