@@ -5,6 +5,6 @@
         public long Id { get; set; }
         public DateTime Date { get; set; }
         public long CreationAccountId { get; set; }
-        public List<long> ProductIds { get; set; }
+        public List<OrderProductsApiDTO> Products { get; set; }
     }
 }
