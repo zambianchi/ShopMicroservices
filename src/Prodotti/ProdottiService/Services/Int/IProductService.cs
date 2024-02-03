@@ -1,5 +1,6 @@
 ﻿using ProdottiService.Models.API.Entity;
 using ProdottiService.Models.API.Request;
+using ProdottiService.Models.API.Response;
 
 namespace ProdottiService.Services.Int
 {
@@ -8,6 +9,7 @@ namespace ProdottiService.Services.Int
         Task<List<ProductDTO>> GetProducts(CancellationToken cancellationToken);
         Task<ProductDTO> GetProduct(long idProduct, CancellationToken cancellationToken);
         Task<List<ProductDTO>> GetSpecificProducts(List<long> idsProduct, CancellationToken cancellationToken);
+        Task<GetSpecificProductsAvailabilitiesResponse> GetSpecificProductsAvailabilities(List<long> idsProduct, CancellationToken cancellationToken);
         Task<ProductDTO> CreateProduct(CreateProductRequest request, CancellationToken cancellationToken);
         Task DeleteProduct(long idProduct, CancellationToken cancellationToken);
         Task<ProductDTO> EditProduct(EditProductRequest request, CancellationToken cancellationToken);

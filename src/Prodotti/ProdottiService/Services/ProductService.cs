@@ -3,6 +3,7 @@ using ProdottiService.Context;
 using ProdottiService.Models;
 using ProdottiService.Models.API.Entity;
 using ProdottiService.Models.API.Request;
+using ProdottiService.Models.API.Response;
 using ProdottiService.Models.DB;
 using ProdottiService.Services.Int;
 
@@ -64,6 +65,25 @@ namespace ProdottiService.Services
             }
 
             return products;
+        }
+
+        /// <summary>
+        /// Carica specifici prodotti
+        /// </summary>
+        public async Task<GetSpecificProductsAvailabilitiesResponse> GetSpecificProductsAvailabilities(List<long> idsProduct, CancellationToken cancellationToken)
+        {
+            var productsDB = await _productsContext.Products
+                .Where(x => idsProduct.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+            List<ProductAvailabilityDTO> productsAvailabilities = new List<ProductAvailabilityDTO>();
+            foreach (var productDB in productsDB)
+            {
+                var productAvailability = ProductAvailabilityDTO.ProductAvailabilityDTOFactory(productDB.Id, productDB.QuantitaDisponibile);
+                productsAvailabilities.Add(productAvailability);
+            }
+
+            return GetSpecificProductsAvailabilitiesResponse.GetSpecificProductsAvailabilitiesResponseFactory(productsAvailabilities);
         }
 
         /// <summary>
