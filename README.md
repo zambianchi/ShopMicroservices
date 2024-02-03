@@ -16,8 +16,10 @@ Benvenuto nel nostro avveniristico progetto di microservizi dedicato alla gestio
 1. Assicurati di avere Docker installato - il nostro veicolo spaziale per l'esecuzione dei microservizi.
 2. Clona il repository e fatti strada verso il futuro.
 3. Posizionati nella directory principale del progetto.
-4. Esegui il comando `docker-compose up -d` per avviare tutti i microservizi.
-5. Goditi il viaggio spaziale del nostro Shop del Futuro!
+4. Apri il file di soluzione `OrdiniService.sln` per aprire il progetto.
+5. Imposta `docker-compose` come progetto di avvio.
+6. Imposta come servizio di avvio `apigateway`.
+7. Goditi il viaggio spaziale del nostro Shop del Futuro attraverso SwaggerUI!
 
 ## 🌌 Esplora e Contribuisci
 
