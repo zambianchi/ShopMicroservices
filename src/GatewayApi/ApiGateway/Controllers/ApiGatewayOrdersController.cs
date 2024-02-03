@@ -67,7 +67,8 @@ namespace ApiGateway.Controllers
         /// Elimina un ordine
         /// </summary>
         /// <param name="idOrder">ID ordine</param>
-        /// <param name="cancellationToken"CancellationToken</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
         [SwaggerResponse(200, typeof(void))]
         [SwaggerResponse(400, typeof(string))]
         [HttpDelete("{idOrder}", Name = "DeleteOrder")]
