@@ -57,5 +57,20 @@ namespace ShopCommons.Models
         {
             return new RabbitMQMessageRequest<T>(RabbitMQMessageType.REQUEST_EDIT_PRODUCT, messageData);
         }
+
+        public static RabbitMQMessageRequest<T> RabbitMQMessageRequest_EDIT_PRODUCT_AVAILABLE_AMOUNT_Factory(T messageData)
+        {
+            return new RabbitMQMessageRequest<T>(RabbitMQMessageType.REQUEST_EDIT_PRODUCT_AVAILABLE_AMOUNT, messageData);
+        }
+
+        public static RabbitMQMessageRequest<T> RabbitMQMessageRequest_EDIT_PRODUCTS_AVAILABLE_AMOUNT_Factory(T messageData)
+        {
+            return new RabbitMQMessageRequest<T>(RabbitMQMessageType.REQUEST_EDIT_PRODUCTS_AVAILABLE_AMOUNT, messageData);
+        }
+
+        public static RabbitMQMessageRequest<T> RabbitMQMessageRequest_GET_PRODUCTS_AVAILABILITIES_Factory(T messageData)
+        {
+            return new RabbitMQMessageRequest<T>(RabbitMQMessageType.REQUEST_GET_PRODUCTS_AVAILABILITIES, messageData);
+        }
     }
 }

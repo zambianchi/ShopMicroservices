@@ -99,11 +99,14 @@ namespace ShopCommons.Services
                 }
                 finally
                 {
-                    var responseBytes = Encoding.UTF8.GetBytes(response);
-                    this._channel.BasicPublish(exchange: string.Empty,
-                                         routingKey: props.ReplyTo,
-                                         basicProperties: replyProps,
-                                         body: responseBytes);
+                    if (!String.IsNullOrWhiteSpace(props.ReplyTo))
+                    {
+                        var responseBytes = Encoding.UTF8.GetBytes(response);
+                        this._channel.BasicPublish(exchange: string.Empty,
+                                             routingKey: props.ReplyTo,
+                                             basicProperties: replyProps,
+                                             body: responseBytes);
+                    }
 
                     // Invio l'ACK per messaggio ricevuto
                     this._channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
