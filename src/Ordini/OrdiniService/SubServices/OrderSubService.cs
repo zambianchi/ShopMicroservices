@@ -1,7 +1,6 @@
 ﻿using OrdiniService.Models.ExternalAPI.Request;
 using OrdiniService.Settings.Int;
 using OrdiniService.SubServices.Int;
-using ShopCommons.Helper;
 using ShopCommons.Models;
 using ShopCommons.Services.Int;
 
@@ -29,12 +28,15 @@ namespace OrdiniService.SubServices
             try
             {
                 // Invio segnalazione di prodotti venduti
-                var requestOrder = RabbitMQMessageRequest<EditProductsAvailableAmountRequestApiDTO>.RabbitMQMessageRequest_EDIT_EDIT_PRODUCTS_AVAILABLE_AMOUNT_Factory(request);
+                var requestOrder = RabbitMQMessageRequest<EditProductsAvailableAmountRequestApiDTO>.RabbitMQMessageRequest_EDIT_PRODUCTS_AVAILABLE_AMOUNT_Factory(request);
 
                 // Riporto variazione quantità per i prodotti
                 this._rabbitServiceHelper.EnqueueMessage(this._environmentSettings.EnvironmentName_ProductRabbitMQQueue, requestOrder);
             }
-            catch (Exception ex) { }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

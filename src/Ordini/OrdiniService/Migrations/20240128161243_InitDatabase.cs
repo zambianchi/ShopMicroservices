@@ -61,21 +61,6 @@ namespace OrdiniService.Migrations
                                 { 3, new DateTime(2024, 01, 27, 04, 11, 03), 1, 1 },
                                 { 4, new DateTime(2024, 01, 27, 08, 00, 00), 2, 1 },
                         });
-
-            // Mock data OrderProducts
-            migrationBuilder.InsertData(
-                table: "OrderProducts",
-                columns: new[] { nameof(OrderProducts.IdProduct), "OrderId" },
-                values: new object[,] {
-                                { 1, 1 },
-                                { 2, 1 },
-                                { 4, 1 },
-                                { 5, 1 },
-                                { 6, 2 },
-                                { 4, 3 },
-                                { 5, 3 },
-                                { 9, 4 },
-                });
         }
 
         /// <inheritdoc />

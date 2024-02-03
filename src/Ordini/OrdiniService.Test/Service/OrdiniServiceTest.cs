@@ -5,8 +5,10 @@ using OrdiniService.Context;
 using OrdiniService.Models.API.Entity;
 using OrdiniService.Models.API.Request;
 using OrdiniService.Models.DB;
+using OrdiniService.Models.ExternalAPI.Response;
 using OrdiniService.Services;
 using OrdiniService.Services.Int;
+using OrdiniService.SubServices.Int;
 using OrdiniService.Test.MockedData;
 using System.Threading;
 
@@ -22,9 +24,10 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             //Act
             var getOrdersResult = await orderService.GetOrders(new CancellationToken());
@@ -39,9 +42,10 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             // Act
             var getOrdersResult = await orderService.GetOrders(new CancellationToken());
@@ -60,9 +64,10 @@ namespace OrdiniService.Test.Service
             var firstElement = OrdersMock.GetMockedOrders().First();
 
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             // Act
             var getOrderResult = await orderService.GetOrder(firstElement.Id, new CancellationToken());
@@ -80,9 +85,10 @@ namespace OrdiniService.Test.Service
             var orderIdNotExist = 0;
 
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             // Act
             Task result() => orderService.GetOrder(orderIdNotExist, new CancellationToken());
@@ -98,15 +104,15 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
             mockContext.Setup(c => c.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
-            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1, new List<long>());
-            var productIdsList = new List<long>() { 1, 2, 3 };
+            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1, OrdersMock.GetMockedCreateOrderProducts());
 
-            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, productIdsList);
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, newOrder.Products);
 
             var cancellationToken = new CancellationToken();
 
@@ -126,15 +132,15 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
             mockContext.Setup(c => c.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
-            var newOrder = OrderDTO.OrderDTOFactory(100, new DateTime(), 1, new List<long>());
-            var productIdsList = new List<long>();
+            var productList = new List<OrderProductsDTO>();
 
-            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(newOrder.CreationAccountId, newOrder.Date, productIdsList);
+            CreateOrderRequest request = CreateOrderRequest.CreateOrderRequestFactory(1, DateTime.Now, productList);
 
             // Act
             Task result() => orderService.CreateOrder(request, new CancellationToken());
@@ -152,9 +158,10 @@ namespace OrdiniService.Test.Service
             var firstElement = OrdersMock.GetMockedOrders().First();
 
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
             var cancellationToken = new CancellationToken();
 
             // Act
@@ -170,9 +177,10 @@ namespace OrdiniService.Test.Service
         {
             // Arrange
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             // Act
             Task result() => orderService.DeleteOrder(-1, new CancellationToken());
@@ -188,11 +196,12 @@ namespace OrdiniService.Test.Service
             var firstElement = OrdersMock.GetMockedOrders().First();
 
             var mockContext = new Mock<OrderContext>();
+            var mockOrderSubService = new Mock<IOrderSubService>();
             mockContext.Setup(c => c.Orders).ReturnsDbSet(OrdersMock.GetMockedOrders());
             mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new DbUpdateException());
 
-            var orderService = new OrderService(mockContext.Object);
+            var orderService = new OrderService(mockContext.Object, mockOrderSubService.Object);
 
             // Act
             Task result() => orderService.DeleteOrder(firstElement.Id, new CancellationToken());

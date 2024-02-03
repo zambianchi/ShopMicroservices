@@ -5,19 +5,19 @@
         public long Id { get; set; }
         public DateTime Date { get; set; }
         public long CreationAccountId { get; set; }
-        public List<long> ProductIds { get; set; }
+        public List<OrderProductsDTO> Products { get; set; }
 
-        public OrderDTO(long id, DateTime date, long creationAccountId, List<long> productIds)
+        public OrderDTO(long id, DateTime date, long creationAccountId, List<OrderProductsDTO> products)
         {
-            Id = id;
-            Date = date;
-            CreationAccountId = creationAccountId;
-            ProductIds = productIds;
+            this.Id = id;
+            this.Date = date;
+            this.CreationAccountId = creationAccountId;
+            this.Products = products;
         }
 
-        public static OrderDTO OrderDTOFactory(long id, DateTime date, long creationAccountId, List<long> productIds)
+        public static OrderDTO OrderDTOFactory(long id, DateTime date, long creationAccountId, List<OrderProductsDTO> products)
         {
-            return new OrderDTO(id, date, creationAccountId, productIds);
+            return new OrderDTO(id, date, creationAccountId, products);
         }
     }
 }
