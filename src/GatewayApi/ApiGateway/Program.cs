@@ -47,7 +47,7 @@ namespace ApiGateway
                     Title = "Gestione Shop Gateway API",
                     Version = "v1",
                     Description = "Un gateway per la gestione di ordini e prodotti",
-                    TermsOfService = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE"),
+                    TermsOfService = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE.md"),
                     Contact = new OpenApiContact
                     {
                         Name = "Davide Zambianchi",
@@ -56,7 +56,7 @@ namespace ApiGateway
                     License = new OpenApiLicense
                     {
                         Name = "MIT License",
-                        Url = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE"),
+                        Url = new Uri("https://github.com/zambianchi/ShopMicroservices/blob/master/LICENSE.md"),
                     }
                 });
 

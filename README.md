@@ -31,7 +31,7 @@ Riscontri un problema? Hai un'idea che potrebbe migliorare il nostro viaggio? Co
 
 ## 📡 Licenza Galattica
 
-Questo progetto è rilasciato sotto la [Licenza Galattica MIT](LICENSE). La tua partecipazione è il nostro carburante!
+Questo progetto è rilasciato sotto la [Licenza Galattica MIT](LICENSE.md). La tua partecipazione è il nostro carburante!
 
 ---
 
