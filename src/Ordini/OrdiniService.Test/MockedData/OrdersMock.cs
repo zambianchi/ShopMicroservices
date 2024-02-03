@@ -36,25 +36,5 @@ namespace OrdiniService.Test.MockedData
                 new OrderProductsDTO(2, 8)
             };
         }
-
-        public static List<ProductAvailabilityApiDTO> GetProductsAvailabilities()
-        {
-            return new List<ProductAvailabilityApiDTO>
-            {
-                new ProductAvailabilityApiDTO{ Id = 1, Availability = 30 },
-                new ProductAvailabilityApiDTO{ Id = 2, Availability = 10 },
-                new ProductAvailabilityApiDTO{ Id = 3, Availability = 30 },
-            };
-        }
-
-        public static List<ProductAvailabilityApiDTO> GetProducts_NO_Availabilities()
-        {
-            return new List<ProductAvailabilityApiDTO>
-            {
-                new ProductAvailabilityApiDTO{ Id = 1, Availability = 0 },
-                new ProductAvailabilityApiDTO{ Id = 2, Availability = 0 },
-                new ProductAvailabilityApiDTO{ Id = 3, Availability = 0 },
-            };
-        }
     }
 }

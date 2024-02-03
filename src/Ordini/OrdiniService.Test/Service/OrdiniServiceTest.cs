@@ -5,12 +5,9 @@ using OrdiniService.Context;
 using OrdiniService.Models.API.Entity;
 using OrdiniService.Models.API.Request;
 using OrdiniService.Models.DB;
-using OrdiniService.Models.ExternalAPI.Response;
 using OrdiniService.Services;
-using OrdiniService.Services.Int;
 using OrdiniService.SubServices.Int;
 using OrdiniService.Test.MockedData;
-using System.Threading;
 
 namespace OrdiniService.Test.Service
 {
